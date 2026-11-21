@@ -1,0 +1,16 @@
+# Teste rápido: o servidor do GitHub consegue falar com a API do SISAGUA e do IBGE?
+name: Diagnóstico de acesso às APIs
+on: workflow_dispatch
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: IP público do servidor
+        run: curl -s -m 20 https://ipinfo.io/json || true
+      - name: IBGE
+        run: curl -s -m 30 -o /dev/null -w "IBGE %{http_code} %{time_total}s\n" "https://servicodados.ibge.gov.br/api/v1/localidades/estados/GO/municipios" || echo "IBGE falhou"
+      - name: SISAGUA
+        run: |
+          curl -s -m 60 -o /dev/null -w "SISAGUA swagger %{http_code} %{time_total}s\n" "https://apidadosabertos.saude.gov.br/v1/" || echo "SISAGUA swagger falhou ($?)"
+          curl -s -m 60 -o /dev/null -w "SISAGUA dados %{http_code} %{time_total}s\n" "https://apidadosabertos.saude.gov.br/sisagua/pontos-de-captacao?codigo_ibge=520030&limit=5" || echo "SISAGUA dados falhou ($?)"
