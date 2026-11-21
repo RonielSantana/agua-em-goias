@@ -872,10 +872,15 @@ function tabela(alvoId, { colunas, linhas, chave, nomeArquivo, alternador = null
       const v = c.html ? c.html(l) : c.texto ? c.texto(l) : l[c.k];
       return el("td", { class: [c.num && "num", c.quebra && "quebra"].filter(Boolean).join(" ") }, v ?? "");
     }))) : el("tr", {}, el("td", { colspan: colunas.length, style: "text-align:center;color:var(--on-3);padding:32px" }, vazioTxt)));
-    const pag = el("div", { class: "paginacao" },
-      `${fmt(ls.length ? st.pagina * porPagina + 1 : 0)}–${fmt(Math.min(ls.length, (st.pagina + 1) * porPagina))} de ${fmt(ls.length)}`,
-      el("button", { class: "icone-btn", title: "Página anterior", disabled: st.pagina === 0, onclick: () => { st.pagina--; render(); } }, el("span", { class: "ms", style: "transform:rotate(-90deg)" }, "arrow_upward")),
-      el("button", { class: "icone-btn", title: "Próxima página", disabled: st.pagina >= paginas - 1, onclick: () => { st.pagina++; render(); } }, el("span", { class: "ms", style: "transform:rotate(90deg)" }, "arrow_upward")));
+    // Com uma página só, diz que todas as linhas estão à vista e esconde as setas (antes "1–12 de 12"
+    // parecia "página 1 de 12" com as setas travadas).
+    const plural = (n) => `${fmt(n)} ${n === 1 ? "linha" : "linhas"}`;
+    const pag = paginas <= 1
+      ? el("div", { class: "paginacao" }, ls.length ? `Todas as ${plural(ls.length)} na tela` : "")
+      : el("div", { class: "paginacao" },
+        `Linhas ${fmt(st.pagina * porPagina + 1)}–${fmt(Math.min(ls.length, (st.pagina + 1) * porPagina))} de ${fmt(ls.length)} · página ${st.pagina + 1} de ${paginas}`,
+        el("button", { class: "icone-btn", title: "Página anterior", "aria-label": "Página anterior", disabled: st.pagina === 0, onclick: () => { st.pagina--; render(); } }, el("span", { class: "ms", style: "transform:rotate(-90deg)" }, "arrow_upward")),
+        el("button", { class: "icone-btn", title: "Próxima página", "aria-label": "Próxima página", disabled: st.pagina >= paginas - 1, onclick: () => { st.pagina++; render(); } }, el("span", { class: "ms", style: "transform:rotate(90deg)" }, "arrow_upward")));
     alvo.replaceChildren(el("div", { style: "display:grid;gap:12px" }, ferr, el("div", { class: "tabela-caixa" }, el("table", {}, el("thead", {}, cab), corpo)), pag));
   };
   render();
