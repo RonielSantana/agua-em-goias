@@ -1,0 +1,1327 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Água em Goiás · SISAGUA</title>
+<meta name="description" content="Qualidade da água para consumo humano nos municípios de Goiás, com dados abertos do SISAGUA (Ministério da Saúde), atualizados toda semana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400..500,0..1,0&icon_names=analytics,arrow_downward,arrow_upward,bar_chart,check_circle,close,dark_mode,database,download,error,factory,filter_alt_off,history,info,light_mode,location_on,refresh,science,search,table_chart,water_drop&display=block">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>window.SISAGUA_SITE = { base: "dados/", estado: "Goiás" };</script>
+<style>
+/* Layout: barra superior com busca, abas, faixa de filtros em chips e grade de cartões (Material 3, estilo Google). */
+:root {
+  --bg: #f0f4f9; --surface: #ffffff; --surface-2: #f8fafd; --surface-3: #e9eef6;
+  --on: #1f1f1f; --on-2: #444746; --on-3: #747775; --outline: #c4c7c5; --outline-2: #e1e3e1;
+  --primary: #0b57d0; --on-primary: #ffffff; --primary-c: #d3e3fd; --on-primary-c: #041e49;
+  --ok: #146c2e; --ok-c: #c4eed0; --bad: #b3261e; --bad-c: #f9dedc; --warn: #8a5300; --warn-c: #ffdea8;
+  --inverse: #303030; --on-inverse: #f2f2f2;
+  --c1: #1a73e8; --c2: #12b5cb; --c3: #e8710a; --c4: #9334e6; --c-ok: #1e8e3e; --c-bad: #d93025; --c-neutral: #bdc1c6;
+  --shadow-1: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+  --shadow-2: 0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
+  --r-lg: 16px; --r-md: 12px; --r-sm: 8px;
+  --font: "Google Sans Flex", "Google Sans", Roboto, "Segoe UI", system-ui, sans-serif;
+  --font-text: Roboto, "Segoe UI", system-ui, sans-serif;
+  --mono: "Roboto Mono", ui-monospace, monospace;
+}
+:root[data-tema="escuro"] {
+  --bg: #131314; --surface: #1e1f20; --surface-2: #232425; --surface-3: #282a2c;
+  --on: #e3e3e3; --on-2: #c4c7c5; --on-3: #8e918f; --outline: #5c5f5e; --outline-2: #333537;
+  --primary: #a8c7fa; --on-primary: #062e6f; --primary-c: #0842a0; --on-primary-c: #d3e3fd;
+  --ok: #6dd58c; --ok-c: #0f5223; --bad: #f2b8b5; --bad-c: #8c1d18; --warn: #fcc934; --warn-c: #5c3d00;
+  --inverse: #e3e3e3; --on-inverse: #1f1f1f;
+  --c1: #8ab4f8; --c2: #78d9ec; --c3: #fcad70; --c4: #c58af9; --c-ok: #81c995; --c-bad: #f28b82; --c-neutral: #5f6368;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5), 0 1px 3px 1px rgba(0,0,0,.3); --shadow-2: 0 1px 3px rgba(0,0,0,.5), 0 4px 8px 3px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--on); font: 14px/1.43 var(--font-text); -webkit-font-smoothing: antialiased; }
+.ms { font-family: "Material Symbols Rounded"; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased; user-select: none; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+/* ---------- barra superior ---------- */
+.appbar { position: sticky; top: 0; z-index: 20; background: var(--bg); }
+.appbar-in { display: flex; align-items: center; gap: 12px; padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left)); max-width: 1440px; margin: 0 auto; }
+.marca { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 0 0 auto; }
+.marca .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; }
+.marca .logo .ms { font-size: 22px; font-variation-settings: "FILL" 1; }
+.marca b { font: 500 20px/1 var(--font); letter-spacing: -.01em; }
+.marca small { display: block; font: 400 12px/1.2 var(--font-text); color: var(--on-2); margin-top: 2px; }
+.busca { position: relative; flex: 1 1 520px; min-width: 0; max-width: 720px; margin: 0 auto; }
+.busca-campo { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 8px 0 16px; border-radius: 24px; background: var(--surface-3); transition: background .15s, box-shadow .15s; }
+.busca-campo:focus-within, .busca.aberta .busca-campo { background: var(--surface); box-shadow: var(--shadow-1); }
+.busca.aberta .busca-campo { border-radius: 24px 24px 0 0; }
+.busca input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--on); font: 400 16px var(--font-text); }
+.busca input::placeholder { color: var(--on-2); }
+.sugestoes { position: absolute; left: 0; right: 0; top: 48px; background: var(--surface); border-radius: 0 0 24px 24px; box-shadow: var(--shadow-2); padding: 0 0 12px; list-style: none; margin: 0; max-height: 60vh; overflow: auto; z-index: 30; }
+.sugestoes::before { content: ""; display: block; height: 1px; background: var(--outline-2); margin: 0 16px 8px; }
+.sugestoes li { display: flex; align-items: center; gap: 14px; padding: 8px 20px; cursor: pointer; }
+.sugestoes li[aria-selected="true"], .sugestoes li:hover { background: var(--surface-3); }
+.sugestoes li .ms { color: var(--on-2); }
+.sugestoes li span.n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sugestoes li mark { background: none; color: inherit; font-weight: 700; }
+.sugestoes li .uf { font: 500 12px var(--font-text); color: var(--on-2); }
+.sugestoes .titulo { padding: 4px 20px 6px; font: 500 12px var(--font-text); color: var(--on-2); cursor: default; }
+.sugestoes .titulo:hover { background: none; }
+.acoes { display: flex; gap: 4px; flex: 0 0 auto; }
+.icone-btn { width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; display: grid; place-items: center; cursor: pointer; color: var(--on-2); }
+.icone-btn:hover { background: var(--surface-3); }
+.icone-btn:disabled { opacity: .38; cursor: default; background: none; }
+
+/* ---------- abas ---------- */
+.abas { display: flex; gap: 4px; max-width: 1440px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left)); overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--outline-2); }
+.aba { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; border: 0; background: none; color: var(--on-2); font: 500 14px var(--font); cursor: pointer; position: relative; white-space: nowrap; border-radius: 8px 8px 0 0; }
+.aba:hover { background: var(--surface-3); color: var(--on); }
+.aba[aria-selected="true"] { color: var(--primary); }
+.aba[aria-selected="true"]::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--primary); }
+.aba[aria-selected="true"] .ms { font-variation-settings: "FILL" 1; }
+
+/* ---------- conteúdo ---------- */
+main { max-width: 1440px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display: grid; gap: 16px; }
+.contexto { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 24px; padding: 4px 4px 0; }
+.contexto h1 { margin: 0; font: 400 28px/1.25 var(--font); letter-spacing: -.01em; text-wrap: balance; }
+.contexto .meta { color: var(--on-2); font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.contexto .meta .ms { font-size: 16px; vertical-align: -3px; }
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { position: relative; display: inline-flex; align-items: center; height: 32px; border: 1px solid var(--outline); border-radius: 8px; background: var(--surface); color: var(--on-2); font: 500 14px var(--font-text); }
+.chip.ativo { background: var(--primary-c); border-color: transparent; color: var(--on-primary-c); }
+.chip select { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: inherit; font: inherit; height: 100%; padding: 0 30px 0 12px; cursor: pointer; max-width: 260px; text-overflow: ellipsis; }
+.chip::after { content: ""; position: absolute; right: 12px; top: 50%; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.chip select option { color: var(--on); background: var(--surface); }
+.btn-texto { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 16px; background: none; color: var(--primary); font: 500 14px var(--font-text); cursor: pointer; }
+.btn-texto:hover { background: var(--surface-3); }
+.btn-tonal { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px 0 16px; border: 0; border-radius: 20px; background: var(--primary-c); color: var(--on-primary-c); font: 500 14px var(--font-text); cursor: pointer; }
+.btn-tonal:hover { box-shadow: var(--shadow-1); }
+
+.progresso { height: 4px; border-radius: 2px; background: var(--primary-c); overflow: hidden; position: relative; }
+.progresso::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: var(--primary); border-radius: 2px; animation: corre 1.4s ease-in-out infinite; }
+@keyframes corre { 0% { left: -40%; } 100% { left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .progresso::after { animation: none; width: 100%; opacity: .6; } }
+.aviso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow-1); font-size: 14px; }
+.aviso .ms { color: var(--primary); margin-top: 1px; }
+.aviso.erro { background: var(--bad-c); box-shadow: none; } .aviso.erro .ms { color: var(--bad); }
+.aviso.atencao { background: var(--warn-c); box-shadow: none; } .aviso.atencao .ms { color: var(--warn); }
+.aviso .corpo { flex: 1; display: grid; gap: 6px; }
+
+.grade { display: grid; gap: 16px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.s12 { grid-column: span 12; } .s8 { grid-column: span 8; } .s6 { grid-column: span 6; } .s4 { grid-column: span 4; } .s3 { grid-column: span 3; }
+@media (max-width: 1100px) { .s8, .s4 { grid-column: span 12; } .s3 { grid-column: span 6; } }
+@media (max-width: 760px) { .s6, .s3 { grid-column: span 12; } }
+.cartao { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 16px 20px 20px; min-width: 0; display: grid; gap: 12px; align-content: start; }
+.cartao-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.cartao h2 { margin: 0; font: 500 16px/1.4 var(--font); }
+.cartao .sub { margin: 2px 0 0; color: var(--on-2); font-size: 13px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--on-2); margin: 0; padding: 0; list-style: none; }
+.legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.legenda i.linha { width: 16px; height: 3px; border-radius: 2px; vertical-align: 2px; }
+
+/* scorecards */
+.kpi { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 16px 20px; display: grid; gap: 4px; min-width: 0; position: relative; overflow: hidden; }
+.kpi h3 { margin: 0; font: 500 13px var(--font-text); color: var(--on-2); display: flex; align-items: center; gap: 6px; }
+.kpi h3 .ms { font-size: 18px; }
+.kpi .valor { font: 400 34px/1.15 var(--font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kpi .linha2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--on-2); min-height: 22px; }
+.delta { display: inline-flex; align-items: center; gap: 2px; padding: 1px 8px 1px 4px; border-radius: 10px; font: 500 12px var(--font-text); }
+.delta .ms { font-size: 16px; }
+.delta.bom { background: var(--ok-c); color: var(--ok); } .delta.ruim { background: var(--bad-c); color: var(--bad); } .delta.neutro { background: var(--surface-3); color: var(--on-2); }
+.kpi svg.spark { position: absolute; right: 16px; top: 16px; width: 88px; height: 32px; overflow: visible; }
+.kpi.estado-bom .valor { color: var(--ok); } .kpi.estado-ruim .valor { color: var(--bad); } .kpi.estado-alerta .valor { color: var(--warn); }
+
+/* insights */
+.insights { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.insights li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.insights li .ms { color: var(--primary); font-variation-settings: "FILL" 1; margin-top: 1px; }
+.insights b { font-weight: 500; }
+
+/* gráficos */
+.grafico { position: relative; width: 100%; min-height: 240px; }
+.grafico svg { display: block; overflow: visible; }
+.grafico text { fill: var(--on-2); font: 12px var(--font-text); }
+.grafico .rot { fill: var(--on); }
+.grafico .rot-ruim { fill: var(--bad); font-weight: 500; }
+.grafico .grade line { stroke: var(--outline-2); }
+.grafico .grade .domain, .grafico .eixo .domain { display: none; }
+.grafico .eixo line { stroke: var(--outline); }
+.grafico .vazio { display: grid; place-items: center; min-height: 200px; color: var(--on-3); font-size: 14px; text-align: center; gap: 8px; }
+.grafico .vazio .ms { font-size: 32px; color: var(--outline); }
+.dica { position: absolute; pointer-events: none; z-index: 10; background: var(--inverse); color: var(--on-inverse); border-radius: 6px; padding: 8px 12px; font-size: 12.5px; line-height: 1.5; white-space: nowrap; box-shadow: var(--shadow-2); }
+.dica b { font-weight: 500; display: block; margin-bottom: 2px; }
+.dica i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+
+/* tabelas */
+.tabela-ferr { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.tabela-busca { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 18px; background: var(--surface-3); min-width: 220px; flex: 0 1 320px; }
+.tabela-busca input { border: 0; outline: 0; background: transparent; color: var(--on); font: inherit; flex: 1; min-width: 0; }
+.tabela-busca .ms { color: var(--on-2); font-size: 18px; }
+.alternar { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--on-2); cursor: pointer; }
+.alternar input { appearance: none; width: 36px; height: 20px; border-radius: 10px; background: var(--outline); position: relative; cursor: pointer; margin: 0; transition: background .15s; }
+.alternar input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); transition: transform .15s; }
+.alternar input:checked { background: var(--primary); }
+.alternar input:checked::after { transform: translateX(16px); background: var(--on-primary); }
+.tabela-caixa { overflow: auto; max-height: 560px; border: 1px solid var(--outline-2); border-radius: var(--r-md); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--outline-2); white-space: nowrap; }
+td.quebra { white-space: normal; min-width: 220px; }
+th { position: sticky; top: 0; background: var(--surface-2); font: 500 12.5px var(--font-text); color: var(--on-2); cursor: pointer; user-select: none; z-index: 1; }
+th:hover { color: var(--on); }
+th .ms { font-size: 16px; vertical-align: -3px; opacity: 0; }
+th[aria-sort] .ms { opacity: 1; color: var(--primary); }
+th.num, td.num { text-align: right; }
+tbody tr:hover td { background: var(--surface-2); }
+tbody tr:last-child td { border-bottom: 0; }
+.pilula { display: inline-flex; align-items: center; height: 22px; padding: 0 10px; border-radius: 11px; font: 500 12px var(--font-text); }
+.pilula.bom { background: var(--ok-c); color: var(--ok); } .pilula.ruim { background: var(--bad-c); color: var(--bad); } .pilula.neutro { background: var(--surface-3); color: var(--on-2); }
+.paginacao { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 13px; color: var(--on-2); }
+.vazio-pag { display: grid; justify-items: center; gap: 12px; padding: 72px 16px; text-align: center; color: var(--on-2); }
+.vazio-pag .ms { font-size: 56px; color: var(--primary); font-variation-settings: "FILL" 1; }
+.vazio-pag h2 { margin: 0; font: 400 24px var(--font); color: var(--on); }
+.vazio-pag p { margin: 0; max-width: 56ch; }
+.atalhos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+details.notas { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 14px 20px; }
+details.notas summary { cursor: pointer; font: 500 14px var(--font); display: flex; align-items: center; gap: 8px; }
+details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px; color: var(--on-2); }
+.esmaecido { opacity: .5; pointer-events: none; transition: opacity .2s; }
+@media (max-width: 640px) {
+  .marca small, .marca b { display: none; }
+  .appbar-in { gap: 6px; }
+  .acoes { gap: 0; }
+  .icone-btn { width: 36px; height: 36px; }
+  .busca-campo { padding-left: 12px; }
+  .contexto h1 { font-size: 22px; }
+  .kpi .valor { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="marca">
+      <div class="logo"><span class="ms">water_drop</span></div>
+      <div><b>Água em Goiás</b><small>Qualidade da água · dados abertos do SISAGUA</small></div>
+    </div>
+    <div class="busca" id="busca">
+      <div class="busca-campo">
+        <span class="ms" aria-hidden="true">search</span>
+        <input id="busca-input" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar município (ex.: Novo Gama, GO)" role="combobox" aria-expanded="false" aria-controls="sugestoes" aria-autocomplete="list">
+        <button class="icone-btn" id="busca-limpar" title="Limpar busca" hidden><span class="ms">close</span></button>
+      </div>
+      <ul class="sugestoes" id="sugestoes" role="listbox" hidden></ul>
+    </div>
+    <div class="acoes">
+      <button class="icone-btn" id="b-atualizar" hidden title="Baixar de novo os dados deste município" disabled><span class="ms">refresh</span></button>
+      <button class="icone-btn" id="b-tema" title="Alternar tema claro/escuro"><span class="ms">dark_mode</span></button>
+    </div>
+  </div>
+  <nav class="abas" role="tablist" aria-label="Seções">
+    <button class="aba" role="tab" data-aba="geral" aria-selected="true"><span class="ms">analytics</span>Visão geral</button>
+    <button class="aba" role="tab" data-aba="vigilancia"><span class="ms">science</span>Vigilância</button>
+    <button class="aba" role="tab" data-aba="controle"><span class="ms">factory</span>Controle do prestador</button>
+    <button class="aba" role="tab" data-aba="semestral"><span class="ms">table_chart</span>Controle semestral</button>
+    <button class="aba" role="tab" data-aba="cadastro"><span class="ms">database</span>Cadastro</button>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- estado inicial -->
+  <section class="vazio-pag" id="inicio">
+    <span class="ms">water_drop</span>
+    <h2>Escolha um município</h2>
+    <p>Busque qualquer município do Brasil para ver a vigilância e o controle da qualidade da água, os sistemas de abastecimento, a população atendida e o tratamento, com dados abertos do SISAGUA (Ministério da Saúde).</p>
+    <div class="atalhos" id="atalhos"></div>
+  </section>
+
+  <div id="carregando" hidden>
+    <div class="aviso"><span class="ms">download</span><div class="corpo"><div id="carregando-txt">Carregando…</div><div class="progresso"></div></div></div>
+  </div>
+  <div id="erro" class="aviso erro" hidden><span class="ms">error</span><div class="corpo" id="erro-txt"></div></div>
+
+  <div id="conteudo" hidden>
+    <div class="contexto">
+      <div>
+        <h1 id="ctx-nome">—</h1>
+        <div class="meta" id="ctx-meta"></div>
+      </div>
+      <div class="filtros" id="filtros">
+        <label class="chip" id="chip-sistema"><select id="f-sistema" aria-label="Sistema de abastecimento"></select></label>
+        <label class="chip" id="chip-ano"><select id="f-ano" aria-label="Ano"></select></label>
+        <label class="chip" id="chip-mes"><select id="f-mes" aria-label="Mês"></select></label>
+        <label class="chip" id="chip-param"><select id="f-param" aria-label="Parâmetro"></select></label>
+        <button class="btn-texto" id="b-limpar" hidden><span class="ms">filter_alt_off</span>Limpar filtros</button>
+      </div>
+    </div>
+
+    <!-- ===== Visão geral ===== -->
+    <section data-painel="geral" class="grade">
+      <div class="kpi s3" id="kpi-analises"><h3><span class="ms">science</span>Análises da vigilância</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+      <div class="kpi s3" id="kpi-conf"><h3><span class="ms">check_circle</span>Dentro do padrão</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+      <div class="kpi s3" id="kpi-ecoli"><h3><span class="ms">error</span>Presença de <i>E. coli</i></h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+      <div class="kpi s3" id="kpi-cloro"><h3><span class="ms">water_drop</span>Cloro residual &lt; 0,2 mg/L</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+
+      <div class="cartao s8">
+        <div class="cartao-cab"><div><h2 id="t-tendencia">Conformidade ao longo do tempo</h2><p class="sub" id="s-tendencia"></p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Dentro</li><li><i style="background:var(--c-bad)"></i>Fora</li><li><i style="background:var(--c-neutral)"></i>Sem referência</li><li><i class="linha" style="background:var(--c1)"></i>% dentro do padrão</li></ul>
+        <div class="grafico" id="g-tendencia"></div>
+      </div>
+      <div class="cartao s4">
+        <div class="cartao-cab"><div><h2>Destaques</h2><p class="sub">Gerados a partir dos filtros atuais</p></div></div>
+        <ul class="insights" id="insights"></ul>
+      </div>
+
+      <div class="cartao s6">
+        <div class="cartao-cab"><div><h2>Resultado por parâmetro</h2><p class="sub">Análises dentro e fora da referência da Portaria GM/MS nº 888/2021</p></div></div>
+        <div class="grafico" id="g-parametro"></div>
+      </div>
+      <div class="cartao s6">
+        <div class="cartao-cab"><div><h2>Áreas com mais análises fora do padrão</h2><p class="sub">Bairro ou área informada na coleta</p></div></div>
+        <div class="grafico" id="g-bairros"></div>
+      </div>
+
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2 id="t-calor">Mapa de calor: % fora do padrão</h2><p class="sub" id="s-calor"></p></div></div>
+        <div class="grafico" id="g-calor"></div>
+      </div>
+    </section>
+
+    <!-- ===== Vigilância ===== -->
+    <section data-painel="vigilancia" class="grade" hidden>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2 id="t-dist">Distribuição dos resultados</h2><p class="sub" id="s-dist"></p></div></div>
+        <div class="grafico" id="g-dist"></div>
+      </div>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2>Análises da vigilância</h2><p class="sub">Amostras coletadas pela Secretaria de Saúde. Clique no cabeçalho para ordenar.</p></div></div>
+        <div id="tab-vig"></div>
+      </div>
+    </section>
+
+    <!-- ===== Controle ===== -->
+    <section data-painel="controle" class="grade" hidden>
+      <div class="kpi s3" id="kpi-c-analises"><h3><span class="ms">factory</span>Análises informadas</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-c-ecoli"><h3><span class="ms">error</span><i>E. coli</i> presente</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-c-colif"><h3><span class="ms">science</span>Coliformes totais presentes</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-c-turb"><h3><span class="ms">water_drop</span>Turbidez &gt; 5,0 uT</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2 id="t-ctl">Análises de <i>E. coli</i> informadas pelo prestador</h2><p class="sub" id="s-ctl"></p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c1)"></i>Análises de E. coli</li><li><i style="background:var(--c-bad)"></i>Com presença</li></ul>
+        <div class="grafico" id="g-ctl"></div>
+      </div>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2>Resumo por parâmetro e ponto de monitoramento</h2><p class="sub">Soma das contagens mensais que o prestador informou ao SISAGUA no período escolhido.</p></div></div>
+        <div id="tab-ctl"></div>
+      </div>
+    </section>
+
+    <!-- ===== Controle semestral ===== -->
+    <section data-painel="semestral" class="grade" hidden>
+      <div class="kpi s3" id="kpi-s-analises"><h3><span class="ms">table_chart</span>Análises semestrais</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-s-acima"><h3><span class="ms">error</span>Acima do VMP na água tratada</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-s-nd"><h3><span class="ms">check_circle</span>Não detectado</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-s-maior"><h3><span class="ms">bar_chart</span>Mais perto do limite</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="cartao s8">
+        <div class="cartao-cab"><div><h2>Água tratada: parâmetros mais próximos do limite</h2><p class="sub">Maior resultado de cada parâmetro na saída do tratamento e na distribuição, como % do VMP (valor máximo permitido). A linha marca 100%. A captação (água bruta) fica de fora, porque o VMP vale para a água tratada.</p></div></div>
+        <div class="grafico" id="g-s-limite"></div>
+      </div>
+      <div class="cartao s4">
+        <div class="cartao-cab"><div><h2>Por grupo de parâmetros</h2><p class="sub">Resultados abaixo do VMP, não detectados e acima do VMP</p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Não detectado</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
+        <div class="grafico" id="g-s-grupo"></div>
+      </div>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2>Análises por semestre</h2><p class="sub" id="s-s-tempo"></p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Não detectado</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
+        <div class="grafico" id="g-s-tempo"></div>
+      </div>
+      <div class="cartao s12">
+        <div class="cartao-cab"><div><h2>Resultados do controle semestral</h2><p class="sub">Análises de média e alta complexidade que o prestador informa a cada semestre: substâncias inorgânicas e orgânicas, agrotóxicos, produtos da desinfecção e parâmetros organolépticos.</p></div></div>
+        <div id="tab-sem"></div>
+      </div>
+    </section>
+
+    <!-- ===== Cadastro ===== -->
+    <section data-painel="cadastro" class="grade" hidden>
+      <div class="s12" id="cad-aviso"></div>
+      <div class="kpi s3" id="kpi-sist"><h3><span class="ms">factory</span>Sistemas e soluções</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-pop"><h3><span class="ms">location_on</span>População abastecida</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+      <div class="kpi s3" id="kpi-capt"><h3><span class="ms">water_drop</span>Vazão captada</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-trat"><h3><span class="ms">science</span>Vazão de água tratada</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="cartao s8">
+        <div class="cartao-cab"><div><h2>População abastecida por ano</h2><p class="sub">Por tipo: SAA = sistema de abastecimento · SAC = solução alternativa coletiva · SAI = solução alternativa individual</p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c1)"></i>SAA</li><li><i style="background:var(--c3)"></i>SAC</li><li><i style="background:var(--c-neutral)"></i>SAI</li></ul>
+        <div class="grafico" id="g-pop"></div>
+      </div>
+      <div class="cartao s4">
+        <div class="cartao-cab"><div><h2>Divisão da população</h2><p class="sub" id="s-pop-div"></p></div></div>
+        <div class="grafico" id="g-pop-div" style="min-height:200px"></div>
+      </div>
+      <div class="cartao s12"><div class="cartao-cab"><div><h2>Sistemas e população atendida</h2><p class="sub" id="s-sist"></p></div></div><div id="tab-sist"></div></div>
+      <div class="cartao s12"><div class="cartao-cab"><div><h2>Tratamento da água</h2><p class="sub" id="s-trat"></p></div></div><div id="tab-trat"></div></div>
+      <div class="cartao s12"><div class="cartao-cab"><div><h2>Pontos de captação</h2><p class="sub" id="s-cap"></p></div></div><div id="tab-cap"></div></div>
+    </section>
+
+    <details class="notas">
+      <summary><span class="ms">info</span>Referências e limites dos dados</summary>
+      <ul>
+        <li><i>Escherichia coli</i> e coliformes totais: ausência em 100 mL. Para coliformes totais a Portaria avalia o conjunto de amostras do mês; uma presença isolada é alerta, não necessariamente descumprimento.</li>
+        <li>Turbidez até 5,0 uT · cloro residual livre de 0,2 a 5,0 mg/L · pH de 6,0 a 9,0 (recomendado) · fluoreto até 1,5 mg/L.</li>
+        <li>Vigilância = amostras coletadas pela Secretaria de Saúde. Controle = análises feitas e informadas pelo prestador do serviço.</li>
+        <li>O mesmo sistema pode mudar de nome ao longo dos anos; aqui ele é agrupado pelo código do SISAGUA e aparece com o nome mais recente.</li>
+        <li>Controle semestral: "não detectado" = resultado abaixo do limite de detecção do método (o SISAGUA grava -1). O VMP vale para a água tratada; na captação ele serve só de comparação. Resultados muito acima do VMP podem ser erro de unidade no envio ao SISAGUA e merecem conferência com o laudo.</li>
+        <li>O ano corrente costuma estar incompleto, porque prestadores e secretarias informam com atraso.</li>
+        <li>População e tratamento vêm de uma cópia nacional do cadastro (a API não filtra esses dados por município), guardada no PC sem os dados pessoais dos responsáveis técnicos.</li>
+        <li>Fonte: apidadosabertos.saude.gov.br (SISAGUA) e IBGE (lista de municípios).</li>
+      </ul>
+    </details>
+  </div>
+</main>
+
+<script>
+"use strict";
+// ======================================================================
+// Utilidades
+// ======================================================================
+const $ = (id) => document.getElementById(id);
+const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const MES_C = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const fmt = (n, d = 0) => n == null || isNaN(n) ? "—" : Number(n).toLocaleString("pt-BR", { maximumFractionDigits: d, minimumFractionDigits: 0 });
+const fmtPct = (n, d = 1) => n == null || isNaN(n) ? "—" : Number(n).toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d }) + "%";
+const dataBR = (s) => { if (!s) return ""; const [a, m, d] = String(s).slice(0, 10).split(/[-/]/); return d ? `${d}/${m}/${a}` : s; };
+const semAcento = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const guarda = {
+  ler(k, padrao = null) { try { const v = localStorage.getItem("sisagua-" + k); return v == null ? padrao : JSON.parse(v); } catch { return padrao; } },
+  por(k, v) { try { localStorage.setItem("sisagua-" + k, JSON.stringify(v)); } catch {} },
+};
+function el(tag, props = {}, ...filhos) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") e.className = v; else if (k === "style") e.style.cssText = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else if (v != null && v !== false) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const f of filhos.flat()) if (f != null && f !== false) e.append(f.nodeType ? f : String(f));
+  return e;
+}
+const icone = (nome) => el("span", { class: "ms", "aria-hidden": "true" }, nome);
+
+// ======================================================================
+// Tema
+// ======================================================================
+function aplicaTema(t) {
+  document.documentElement.dataset.tema = t;
+  $("b-tema").querySelector(".ms").textContent = t === "escuro" ? "light_mode" : "dark_mode";
+  guarda.por("tema", t);
+  if (estado.base) desenha();
+}
+$("b-tema").addEventListener("click", () => aplicaTema(document.documentElement.dataset.tema === "escuro" ? "claro" : "escuro"));
+
+// ======================================================================
+// Estado da página (reflete na URL: #m=521523&aba=geral&ano=2025...)
+// ======================================================================
+const estado = { base: null, cad: null, municipio: null, aba: "geral", pedido: 0, tabelas: {} };
+function leHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  return { m: p.get("m"), aba: p.get("aba"), sistema: p.get("sistema") || "", ano: p.get("ano") || "", mes: p.get("mes") || "", param: p.get("param") || "" };
+}
+function gravaHash() {
+  const p = new URLSearchParams();
+  if (estado.municipio) p.set("m", estado.municipio.i);
+  if (estado.aba !== "geral") p.set("aba", estado.aba);
+  for (const k of ["sistema", "ano", "mes", "param"]) { const v = $("f-" + k).value; if (v) p.set(k, v); }
+  history.replaceState(null, "", "#" + p.toString());
+}
+
+// ======================================================================
+// Busca de municípios
+// ======================================================================
+let MUNICIPIOS = [];
+const buscaInput = $("busca-input"), sugestoes = $("sugestoes");
+let selecionada = -1, itensSug = [];
+// Modo de dados: "servidor" (servidor.mjs no PC, consulta a API ao vivo) ou "site" (arquivos JSON
+// publicados junto da página, gerados pela atualização automática; window.SISAGUA_SITE = {base: "dados/"}).
+const SITE = window.SISAGUA_SITE || null;
+let INDICE = null; // no modo site: {atualizado, municipios: [...]}
+// Arrays compactados como {__c: [colunas], __v: [[valores]]} voltam a ser listas de objetos.
+function desempacota(o) {
+  if (Array.isArray(o)) return o.map(desempacota);
+  if (o && typeof o === "object") {
+    if (o.__c && o.__v) return o.__v.map((linha) => Object.fromEntries(o.__c.map((c, i) => [c, linha[i]])));
+    return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, desempacota(v)]));
+  }
+  return o;
+}
+async function listaMunicipios() {
+  if (!SITE) return (await fetch("/api/municipios")).json();
+  INDICE = await (await fetch(SITE.base + "indice.json", { cache: "no-cache" })).json();
+  return INDICE.municipios;
+}
+(async () => {
+  try {
+    const l = await listaMunicipios();
+    MUNICIPIOS = l.map((m) => ({ ...m, chave: semAcento(m.n) }));
+    if (SITE) {
+      buscaInput.placeholder = `Buscar entre os ${MUNICIPIOS.length} municípios de ${SITE.estado || "Goiás"}`;
+      $("b-atualizar").hidden = true;
+      if (INDICE?.atualizado) $("inicio").querySelector("p").append(` Dados atualizados automaticamente toda semana; última atualização em ${new Date(INDICE.atualizado).toLocaleDateString("pt-BR")}.`);
+    }
+    const h = leHash();
+    if (h.m) { const m = MUNICIPIOS.find((x) => x.i === h.m); if (m) abreMunicipio(m, h); }
+    desenhaAtalhos();
+  } catch {
+    mostraErro(SITE ? "Não foi possível carregar a lista de municípios. Recarregue a página." : "Não foi possível carregar a lista de municípios do IBGE. Verifique a conexão e recarregue a página.");
+  }
+})();
+
+function recentes() { return guarda.ler("recentes", []).map((i) => MUNICIPIOS.find((m) => m.i === i)).filter(Boolean); }
+function desenhaAtalhos() {
+  const r = recentes();
+  const alvo = $("atalhos");
+  alvo.replaceChildren(...r.slice(0, 6).map((m) => el("button", { class: "btn-tonal", onclick: () => abreMunicipio(m) }, icone("history"), `${m.n} · ${m.u}`)));
+}
+function buscaMunicipios(txt) {
+  const t = semAcento(txt).trim();
+  if (!t) return [];
+  const partes = t.split(/[,\s]+/).filter(Boolean);
+  const uf = partes.length > 1 && partes[partes.length - 1].length === 2 ? partes.pop().toUpperCase() : null;
+  const nome = partes.join(" ");
+  const res = [];
+  for (const m of MUNICIPIOS) {
+    if (uf && m.u !== uf) continue;
+    const pos = nome ? m.chave.indexOf(nome) : 0;
+    if (pos < 0) continue;
+    res.push({ m, peso: pos === 0 ? 0 : m.chave[pos - 1] === " " ? 1 : 2, pos });
+  }
+  return res.sort((a, b) => a.peso - b.peso || a.m.n.length - b.m.n.length || a.m.n.localeCompare(b.m.n, "pt-BR")).slice(0, 8).map((x) => ({ ...x, tam: nome.length }));
+}
+function mostraSugestoes() {
+  const txt = buscaInput.value;
+  $("busca-limpar").hidden = !txt;
+  itensSug = txt.trim() ? buscaMunicipios(txt) : recentes().slice(0, 6).map((m) => ({ m, recente: true }));
+  sugestoes.replaceChildren();
+  if (!itensSug.length) {
+    if (txt.trim()) sugestoes.append(el("li", { class: "titulo" }, "Nenhum município encontrado"));
+    else { fechaSugestoes(); return; }
+  } else if (!txt.trim()) sugestoes.append(el("li", { class: "titulo", role: "presentation" }, "Recentes"));
+  itensSug.forEach((it, i) => {
+    const nome = it.m.n;
+    const conteudo = it.recente || it.tam == null ? nome : [nome.slice(0, it.pos), el("mark", {}, nome.slice(it.pos, it.pos + it.tam)), nome.slice(it.pos + it.tam)];
+    sugestoes.append(el("li", { role: "option", id: "sug-" + i, "aria-selected": i === selecionada ? "true" : "false", onmousedown: (e) => { e.preventDefault(); escolhe(i); } },
+      icone(it.recente ? "history" : "location_on"), el("span", { class: "n" }, conteudo), el("span", { class: "uf" }, it.m.u)));
+  });
+  sugestoes.hidden = false;
+  $("busca").classList.add("aberta");
+  buscaInput.setAttribute("aria-expanded", "true");
+}
+function fechaSugestoes() { sugestoes.hidden = true; $("busca").classList.remove("aberta"); buscaInput.setAttribute("aria-expanded", "false"); selecionada = -1; }
+function escolhe(i) { const it = itensSug[i]; if (!it) return; fechaSugestoes(); buscaInput.blur(); abreMunicipio(it.m); }
+buscaInput.addEventListener("input", () => { selecionada = buscaInput.value.trim() ? 0 : -1; mostraSugestoes(); });
+buscaInput.addEventListener("focus", () => { buscaInput.select(); mostraSugestoes(); });
+buscaInput.addEventListener("blur", () => setTimeout(fechaSugestoes, 120));
+buscaInput.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    if (sugestoes.hidden) mostraSugestoes();
+    selecionada = (selecionada + (e.key === "ArrowDown" ? 1 : -1) + itensSug.length) % Math.max(1, itensSug.length);
+    sugestoes.querySelectorAll("li[role=option]").forEach((li, i) => li.setAttribute("aria-selected", i === selecionada ? "true" : "false"));
+    buscaInput.setAttribute("aria-activedescendant", "sug-" + selecionada);
+  } else if (e.key === "Enter") { e.preventDefault(); escolhe(Math.max(0, selecionada)); }
+  else if (e.key === "Escape") { fechaSugestoes(); buscaInput.blur(); }
+});
+$("busca-limpar").addEventListener("click", () => { buscaInput.value = ""; buscaInput.focus(); mostraSugestoes(); });
+document.addEventListener("keydown", (e) => { if (e.key === "/" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") { e.preventDefault(); buscaInput.focus(); } });
+
+// ======================================================================
+// Carregamento dos dados
+// ======================================================================
+function mostraErro(txt) { $("erro").hidden = !txt; $("erro-txt").textContent = txt || ""; }
+const NOMES_CONJ = { "vigilancia-parametros-basicos": "vigilância", "controle-mensal-parametros-basicos": "controle do prestador", "pontos-de-captacao": "pontos de captação", "controle-semestral": "controle semestral" };
+
+async function abreMunicipio(m, filtrosIniciais = null, atualizar = false) {
+  const pedido = ++estado.pedido;
+  estado.municipio = m;
+  buscaInput.value = `${m.n}, ${m.u}`;
+  guarda.por("recentes", [m.i, ...guarda.ler("recentes", []).filter((i) => i !== m.i)].slice(0, 8));
+  $("inicio").hidden = true;
+  mostraErro("");
+  $("carregando").hidden = false;
+  $("carregando-txt").textContent = `Consultando ${m.n} no SISAGUA…`;
+  $("conteudo").classList.add("esmaecido");
+  $("b-atualizar").disabled = true;
+  document.title = `${m.n} (${m.u}) · Água em Goiás`;
+
+  const cadPromessa = SITE ? null : fetch(`/api/cadastro/${m.i}`).then((r) => r.ok ? r.json() : null).catch(() => null);
+  try {
+    let url = `/api/municipio/${m.i}${atualizar ? "?atualizar=1" : ""}`, d;
+    if (SITE) { // modo site: um arquivo por município, com o cadastro dentro
+      const r = await fetch(`${SITE.base}${m.i}.json`, { cache: "no-cache" });
+      if (!r.ok) throw new Error(r.status === 404 ? "este município ainda não tem dados publicados" : "HTTP " + r.status);
+      d = desempacota(await r.json());
+      if (pedido !== estado.pedido) return;
+      preparaBase(d, d.cad, filtrosIniciais || {});
+      $("carregando").hidden = true; $("conteudo").hidden = false; desenha();
+      return;
+    }
+    for (;;) {
+      const r = await fetch(url);
+      if (pedido !== estado.pedido) return;
+      const j = await r.json();
+      if (r.status === 202) {
+        const p = j.progresso?.conjuntos || {};
+        const partes = Object.entries(p).map(([k, v]) => `${NOMES_CONJ[k] || k}: ${fmt(v.registros)}${v.pronto ? " ✓" : ""}`);
+        $("carregando-txt").textContent = `Baixando os dados de ${m.n} da API do SISAGUA (só na primeira vez)… ${partes.join(" · ")}`;
+        url = `/api/municipio/${m.i}`;
+        await new Promise((ok) => setTimeout(ok, 900));
+        continue;
+      }
+      if (!r.ok) throw new Error(j.erro || "HTTP " + r.status);
+      d = j; break;
+    }
+    const cad = await cadPromessa;
+    if (pedido !== estado.pedido) return;
+    preparaBase(d, cad, filtrosIniciais || {});
+    $("carregando").hidden = true;
+    $("conteudo").hidden = false;
+    desenha();
+  } catch (e) {
+    if (pedido !== estado.pedido) return;
+    $("carregando").hidden = true;
+    mostraErro(`Não deu para carregar ${m.n}: ${e.message}. Tente de novo em instantes.`);
+  } finally {
+    if (pedido === estado.pedido) { $("conteudo").classList.remove("esmaecido"); $("b-atualizar").disabled = false; }
+  }
+}
+$("b-atualizar").addEventListener("click", () => estado.municipio && abreMunicipio(estado.municipio, filtrosAtuais(), true));
+
+// ======================================================================
+// Classificação (Portaria GM/MS nº 888/2021)
+// ======================================================================
+const LIMITES = {
+  turbidez: { ref: "até 5,0 uT", max: 5 }, cloro: { ref: "0,2 a 5,0 mg/L", min: 0.2, max: 5 },
+  ph: { ref: "6,0 a 9,0", min: 6, max: 9 }, fluoreto: { ref: "até 1,5 mg/L", max: 1.5 },
+};
+function tipoParametro(p) {
+  if (/Escherichia/i.test(p)) return "ecoli"; if (/coliformes/i.test(p)) return "coliformes";
+  if (/Turbidez/i.test(p)) return "turbidez"; if (/Cloro/i.test(p)) return "cloro"; if (/^pH/i.test(p)) return "ph"; if (/Fluoreto/i.test(p)) return "fluoreto";
+  return null;
+}
+function classifica(r) {
+  const t = r.resultado || "", T = t.toUpperCase(), tipo = tipoParametro(r.parametro || "");
+  const n = t === "" || isNaN(Number(t.replace(",", "."))) ? null : Number(t.replace(",", "."));
+  r.tipo = tipo; r.valor = n;
+  if (tipo === "ecoli" || tipo === "coliformes") { r.ref = "Ausente"; r.sit = T === "PRESENTE" ? "fora" : T === "AUSENTE" ? "dentro" : "sem"; return r; }
+  const lim = LIMITES[tipo];
+  if (!lim || n === null) { r.ref = lim?.ref || ""; r.sit = "sem"; return r; }
+  r.ref = lim.ref;
+  r.sit = (lim.min == null || n >= lim.min) && (lim.max == null || n <= lim.max) ? "dentro" : "fora";
+  return r;
+}
+
+function preparaBase(d, cad, ini) {
+  d.vigilancia.forEach(classifica);
+  d.cad = cad || { populacao: [], tratamento: [], status: null };
+  for (const r of [...d.cad.populacao, ...d.cad.tratamento]) if (r.forma && !d.formas[r.forma]) d.formas[r.forma] = { nome: r.nome, ano: r.ano, tipo: r.tipo };
+  estado.base = d;
+  const anos = [...new Set([...d.vigilancia.map((v) => v.ano), ...d.controle.map((c) => c.ano), ...d.captacao.map((c) => c.ano), ...d.cad.populacao.map((c) => c.ano)].filter(Boolean))].sort((a, b) => b - a);
+  const sist = Object.entries(d.formas).sort((a, b) => a[1].nome.localeCompare(b[1].nome, "pt-BR"));
+  const params = [...new Set(d.vigilancia.map((v) => v.parametro))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  opcoes($("f-sistema"), [["", `Todos os sistemas (${sist.length})`], ...sist.map(([c, f]) => [c, `${f.nome} · ${f.tipo || "?"}`])], ini.sistema);
+  opcoes($("f-ano"), [["", "Todos os anos"], ...anos.map((a) => [a, String(a)])], ini.ano);
+  opcoes($("f-mes"), [["", "Todos os meses"], ...MESES.map((m, i) => [i + 1, m[0].toUpperCase() + m.slice(1)])], ini.mes);
+  opcoes($("f-param"), [["", "Todos os parâmetros"], ...params.map((p) => [p, p])], ini.param);
+  if (ini.aba) trocaAba(ini.aba, false);
+  estado.tabelas = {};
+}
+function opcoes(sel, lista, valor) {
+  sel.replaceChildren(...lista.map(([v, t]) => new Option(t, v)));
+  sel.value = lista.some(([v]) => String(v) === String(valor ?? "")) ? String(valor ?? "") : "";
+}
+function filtrosAtuais() { return { sistema: $("f-sistema").value, ano: $("f-ano").value, mes: $("f-mes").value, param: $("f-param").value, aba: estado.aba }; }
+function filtros() { return { sistema: $("f-sistema").value, ano: Number($("f-ano").value) || null, mes: Number($("f-mes").value) || null, param: $("f-param").value }; }
+["f-sistema", "f-ano", "f-mes", "f-param"].forEach((id) => $(id).addEventListener("change", () => { estado.tabelas = {}; desenha(); }));
+$("b-limpar").addEventListener("click", () => { ["f-sistema", "f-ano", "f-mes", "f-param"].forEach((id) => $(id).value = ""); estado.tabelas = {}; desenha(); });
+
+// ======================================================================
+// Abas
+// ======================================================================
+function trocaAba(aba, redesenhar = true) {
+  estado.aba = aba;
+  document.querySelectorAll(".aba").forEach((b) => b.setAttribute("aria-selected", b.dataset.aba === aba ? "true" : "false"));
+  document.querySelectorAll("[data-painel]").forEach((s) => s.hidden = s.dataset.painel !== aba);
+  $("chip-param").hidden = aba === "cadastro" || aba === "controle" || aba === "semestral";
+  $("chip-mes").hidden = aba === "cadastro" || aba === "semestral";
+  if (redesenhar && estado.base) desenha();
+}
+document.querySelectorAll(".aba").forEach((b) => b.addEventListener("click", () => trocaAba(b.dataset.aba)));
+
+// ======================================================================
+// Componentes de gráfico
+// ======================================================================
+function vazio(alvo, txt, ic = "bar_chart") { alvo.replaceChildren(el("div", { class: "vazio" }, el("div", {}, icone(ic), el("div", {}, txt)))); }
+function dica(alvo) {
+  let d = alvo.querySelector(":scope > .dica");
+  if (!d) { d = el("div", { class: "dica", hidden: true }); alvo.append(d); }
+  return {
+    mostra(ev, titulo, linhas) {
+      d.replaceChildren(el("b", {}, titulo), ...linhas.map((l) => Array.isArray(l) ? el("div", {}, el("i", { style: `background:${l[0]}` }), l[1]) : el("div", {}, l)));
+      d.hidden = false;
+      const c = alvo.getBoundingClientRect();
+      let x = ev.clientX - c.left + 14, y = ev.clientY - c.top + 14;
+      if (x + d.offsetWidth > alvo.clientWidth) x = ev.clientX - c.left - d.offsetWidth - 14;
+      if (y + d.offsetHeight > alvo.clientHeight + 40) y = ev.clientY - c.top - d.offsetHeight - 10;
+      d.style.left = Math.max(0, x) + "px"; d.style.top = y + "px";
+    },
+    esconde() { d.hidden = true; },
+  };
+}
+const animar = () => !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Colunas empilhadas + linha opcional (eixo direito em %).
+function combo(alvo, itens, camadas, { linha = null, rotulo = null, dicaFn, aria, destaque = null }) {
+  alvo.replaceChildren();
+  const larg = alvo.clientWidth, alt = 280, mt = 20, mb = 28, ml = 44, mr = linha ? 44 : 8;
+  const svg = d3.select(alvo).append("svg").attr("width", larg).attr("height", alt).attr("role", "img").attr("aria-label", aria);
+  const x = d3.scaleBand().domain(itens.map((d) => d.chave)).range([ml, larg - mr]).paddingInner(0.28).paddingOuter(0.12);
+  const y = d3.scaleLinear().domain([0, d3.max(itens, (d) => d.total) || 1]).nice().range([alt - mb, mt]);
+  svg.append("g").attr("class", "grade").attr("transform", `translate(${ml},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(larg - ml - mr)).tickFormat((n) => fmt(n)));
+  const maxTicks = Math.max(1, Math.floor((larg - ml - mr) / 52)), passo = Math.ceil(itens.length / maxTicks);
+  svg.append("g").attr("class", "eixo").attr("transform", `translate(0,${alt - mb})`)
+    .call(d3.axisBottom(x).tickValues(itens.filter((_, i) => i % passo === 0).map((d) => d.chave)).tickFormat((k) => itens.find((d) => d.chave === k).rotulo).tickSize(0).tickPadding(10));
+  const r = Math.min(4, x.bandwidth() / 4);
+  itens.forEach((d) => {
+    let acum = 0;
+    const g = svg.append("g").style("opacity", destaque && d.chave !== destaque ? 0.35 : 1);
+    camadas.forEach(([k, cor], ci) => {
+      const v = d.partes[k] || 0;
+      if (!v) return;
+      const topo = camadas.slice(ci + 1).every(([k2]) => !(d.partes[k2] || 0));
+      const rect = g.append("path").attr("fill", cor);
+      const desenhaRet = (h) => {
+        const x0 = x(d.chave), w = x.bandwidth(), yb = y(acum), yt = yb - h;
+        return topo ? `M${x0},${yb}V${yt + r}Q${x0},${yt} ${x0 + r},${yt}H${x0 + w - r}Q${x0 + w},${yt} ${x0 + w},${yt + r}V${yb}Z` : `M${x0},${yb}V${yt}H${x0 + w}V${yb}Z`;
+      };
+      const h = y(acum) - y(acum + v);
+      rect.attr("d", desenhaRet(h));
+      acum += v;
+    });
+    if (rotulo) { const t = rotulo(d); if (t) svg.append("text").attr("class", "rot-ruim").attr("x", x(d.chave) + x.bandwidth() / 2).attr("y", y(d.total) - 6).attr("text-anchor", "middle").text(t); }
+  });
+  if (linha) {
+    const y2 = d3.scaleLinear().domain([Math.max(0, Math.min(80, (d3.min(itens, linha.valor) ?? 0) - 5)), 100]).range([alt - mb, mt]);
+    svg.append("g").attr("class", "eixo").attr("transform", `translate(${larg - mr},0)`).call(d3.axisRight(y2).ticks(4).tickSize(0).tickPadding(8).tickFormat((n) => n + "%")).call((g) => g.select(".domain").remove());
+    const pts = itens.filter((d) => linha.valor(d) != null);
+    // a linha se interrompe nos períodos sem dados, para não sugerir valores que não existem
+    const ln = d3.line().defined((d) => linha.valor(d) != null).x((d) => x(d.chave) + x.bandwidth() / 2).y((d) => y2(linha.valor(d)));
+    const caminho = svg.append("path").datum(itens).attr("fill", "none").attr("stroke", linha.cor).attr("stroke-width", 2.5).attr("stroke-linejoin", "round").attr("d", ln);
+    if (animar() && pts.length > 1) { const L = caminho.node().getTotalLength(); caminho.attr("stroke-dasharray", `${L} ${L}`).attr("stroke-dashoffset", L).transition().duration(700).ease(d3.easeCubicOut).attr("stroke-dashoffset", 0); }
+    svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", (d) => x(d.chave) + x.bandwidth() / 2).attr("cy", (d) => y2(linha.valor(d))).attr("r", 3.5)
+      .attr("fill", css("--surface")).attr("stroke", linha.cor).attr("stroke-width", 2);
+  }
+  const t = dica(alvo);
+  svg.append("g").selectAll("rect").data(itens).join("rect").attr("x", (d) => x(d.chave) - x.step() * x.paddingInner() / 2).attr("width", x.step()).attr("y", mt).attr("height", alt - mb - mt).attr("fill", "transparent")
+    .on("pointermove", (ev, d) => { const [ti, li] = dicaFn(d); t.mostra(ev, ti, li); }).on("pointerleave", () => t.esconde());
+}
+
+// Barras horizontais empilhadas.
+function barrasH(alvo, dados, camadas, { rotulo, dicaFn, aria, max = 12 }) {
+  alvo.replaceChildren();
+  dados = dados.slice(0, max);
+  const larg = alvo.clientWidth, linhaAlt = 30, alt = dados.length * linhaAlt + 26;
+  const svg = d3.select(alvo).append("svg").attr("width", larg).attr("height", alt).attr("role", "img").attr("aria-label", aria);
+  const nomes = svg.append("g").selectAll("text").data(dados).join("text").attr("class", "rot").text((d) => d.nome);
+  let esq = Math.min(larg * 0.42, (d3.max(nomes.nodes(), (n) => n.getComputedTextLength()) || 60) + 12);
+  nomes.each(function () { // corta nomes longos
+    const t = d3.select(this); let s = t.text();
+    while (this.getComputedTextLength() > esq - 12 && s.length > 4) { s = s.slice(0, -2); t.text(s + "…"); }
+  });
+  const dir = 80;
+  const x = d3.scaleLinear().domain([0, d3.max(dados, (d) => d.total) || 1]).nice().range([esq, larg - dir]);
+  const y = d3.scaleBand().domain(dados.map((d) => d.nome)).range([0, alt - 26]).padding(0.3);
+  svg.insert("g", ":first-child").attr("class", "grade").attr("transform", `translate(0,${alt - 26})`)
+    .call(d3.axisBottom(x).ticks(Math.max(2, Math.floor((larg - esq - dir) / 70))).tickSize(-(alt - 26)).tickFormat((n) => fmt(n)));
+  nomes.attr("x", esq - 10).attr("y", (d) => y(d.nome) + y.bandwidth() / 2).attr("dy", "0.35em").attr("text-anchor", "end");
+  const g = svg.append("g").selectAll("g").data(dados).join("g");
+  camadas.forEach(([k, cor], ci) => {
+    const ini = (d) => camadas.slice(0, ci).reduce((s, [k2]) => s + (d.partes[k2] || 0), 0);
+    g.append("rect").attr("x", (d) => x(ini(d))).attr("y", (d) => y(d.nome)).attr("height", y.bandwidth()).attr("rx", 3).attr("fill", cor)
+      .attr("width", (d) => Math.max(0, x(ini(d) + (d.partes[k] || 0)) - x(ini(d))));
+  });
+  g.append("text").attr("x", (d) => x(d.total) + 8).attr("y", (d) => y(d.nome) + y.bandwidth() / 2).attr("dy", "0.35em").attr("class", (d) => rotulo(d)[1]).text((d) => rotulo(d)[0]);
+  const t = dica(alvo);
+  g.append("rect").attr("x", 0).attr("width", larg).attr("y", (d) => y(d.nome) - 4).attr("height", y.bandwidth() + 8).attr("fill", "transparent")
+    .on("pointermove", (ev, d) => { const [ti, li] = dicaFn(d); t.mostra(ev, ti, li); }).on("pointerleave", () => t.esconde());
+}
+
+// Mapa de calor: linhas × colunas, cor pela % fora.
+function mapaCalor(alvo, linhas, colunas, celula, { aria, rotuloCol }) {
+  alvo.replaceChildren();
+  const larg = alvo.clientWidth, alturaLinha = 34, mt = 26;
+  const svg = d3.select(alvo).append("svg").attr("width", larg).attr("role", "img").attr("aria-label", aria);
+  const nomes = svg.append("g").selectAll("text").data(linhas).join("text").attr("class", "rot").text((d) => d);
+  const esq = Math.min(larg * 0.35, (d3.max(nomes.nodes(), (n) => n.getComputedTextLength()) || 60) + 14);
+  const alt = mt + linhas.length * alturaLinha + 4;
+  svg.attr("height", alt);
+  const x = d3.scaleBand().domain(colunas).range([esq, larg]).padding(0.08);
+  const y = d3.scaleBand().domain(linhas).range([mt, alt - 4]).padding(0.08);
+  nomes.attr("x", esq - 10).attr("y", (d) => y(d) + y.bandwidth() / 2).attr("dy", "0.35em").attr("text-anchor", "end");
+  const passo = Math.ceil(colunas.length / Math.max(1, Math.floor((larg - esq) / 44)));
+  svg.append("g").selectAll("text").data(colunas.filter((_, i) => i % passo === 0)).join("text").attr("x", (c) => x(c) + x.bandwidth() / 2).attr("y", 14).attr("text-anchor", "middle").text((c) => rotuloCol(c));
+  const cor = d3.scaleSequential([0, 30], d3.interpolateRgb(css("--surface-3"), css("--c-bad"))).clamp(true);
+  const t = dica(alvo);
+  for (const l of linhas) for (const c of colunas) {
+    const v = celula(l, c);
+    const g = svg.append("g");
+    g.append("rect").attr("x", x(c)).attr("y", y(l)).attr("width", x.bandwidth()).attr("height", y.bandwidth()).attr("rx", 4)
+      .attr("fill", !v || !v.n ? "transparent" : cor(v.pct)).attr("stroke", !v || !v.n ? css("--outline-2") : "none").attr("stroke-dasharray", !v || !v.n ? "2 3" : null);
+    if (v && v.n && x.bandwidth() > 30) g.append("text").attr("x", x(c) + x.bandwidth() / 2).attr("y", y(l) + y.bandwidth() / 2).attr("dy", "0.35em").attr("text-anchor", "middle")
+      .style("fill", v.pct > 15 ? "#fff" : css("--on-2")).style("font-size", "11px").text(v.fora ? Math.round(v.pct) + "%" : "0");
+    g.append("rect").attr("x", x(c)).attr("y", y(l)).attr("width", x.bandwidth()).attr("height", y.bandwidth()).attr("fill", "transparent")
+      .on("pointermove", (ev) => t.mostra(ev, `${l} · ${rotuloCol(c, true)}`, v && v.n ? [`${fmt(v.n)} análises`, `${fmt(v.fora)} fora (${fmtPct(v.pct)})`] : ["Sem análises"]))
+      .on("pointerleave", () => t.esconde());
+  }
+}
+
+// Histograma com faixa de referência.
+function histograma(alvo, valores, lim, { unidade, aria }) {
+  alvo.replaceChildren();
+  const larg = alvo.clientWidth, alt = 240, mt = 16, mb = 30, ml = 44, mr = 12;
+  const ext = d3.extent(valores);
+  // o eixo segue os dados; o limite máximo só entra se estiver perto deles (cloro: 5 mg/L achataria tudo)
+  let lo = Math.min(ext[0], lim?.min ?? ext[0]);
+  let hi = Math.max(ext[1], lim?.min ?? ext[1], lim?.max != null && lim.max <= ext[1] * 1.5 ? lim.max : -Infinity);
+  const q99 = d3.quantile([...valores].sort((a, b) => a - b), 0.99);
+  if (hi > q99 * 3 && q99 > 0) hi = Math.max(q99 * 1.3, lim?.max ?? 0); // não deixa um valor extremo achatar o gráfico
+  if (hi === lo) hi = lo + 1;
+  const x = d3.scaleLinear().domain([lo, hi]).nice().range([ml, larg - mr]);
+  const bins = d3.bin().domain(x.domain()).thresholds(x.ticks(30))(valores.map((v) => Math.min(v, x.domain()[1])));
+  const y = d3.scaleLinear().domain([0, d3.max(bins, (b) => b.length) || 1]).nice().range([alt - mb, mt]);
+  const svg = d3.select(alvo).append("svg").attr("width", larg).attr("height", alt).attr("role", "img").attr("aria-label", aria);
+  if (lim) {
+    const a = lim.min != null ? x(lim.min) : ml, b = lim.max != null ? x(Math.min(lim.max, x.domain()[1])) : larg - mr;
+    svg.append("rect").attr("x", a).attr("y", mt).attr("width", Math.max(0, b - a)).attr("height", alt - mb - mt).attr("fill", css("--ok-c")).attr("opacity", 0.55);
+  }
+  svg.append("g").attr("class", "grade").attr("transform", `translate(${ml},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(larg - ml - mr)).tickFormat((n) => fmt(n)));
+  svg.append("g").attr("class", "eixo").attr("transform", `translate(0,${alt - mb})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((larg - ml) / 70))).tickSize(4).tickFormat((n) => fmt(n, 2)));
+  const dentro = (v) => (lim?.min == null || v >= lim.min) && (lim?.max == null || v <= lim.max);
+  const t = dica(alvo);
+  svg.append("g").selectAll("rect").data(bins).join("rect").attr("x", (b) => x(b.x0) + 1).attr("width", (b) => Math.max(0, x(b.x1) - x(b.x0) - 2))
+    .attr("y", (b) => y(b.length)).attr("height", (b) => y(0) - y(b.length)).attr("rx", 2)
+    .attr("fill", (b) => !lim ? css("--c1") : dentro((b.x0 + b.x1) / 2) ? css("--c1") : css("--c-bad"))
+    .on("pointermove", (ev, b) => t.mostra(ev, `${fmt(b.x0, 2)} a ${fmt(b.x1, 2)} ${unidade}`, [`${fmt(b.length)} análises`])).on("pointerleave", () => t.esconde());
+  if (lim) for (const v of [lim.min, lim.max]) if (v != null && v <= x.domain()[1]) {
+    svg.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y1", mt).attr("y2", alt - mb).attr("stroke", css("--ok")).attr("stroke-width", 1.5).attr("stroke-dasharray", "4 3");
+    svg.append("text").attr("x", x(v)).attr("y", mt - 4).attr("text-anchor", "middle").style("fill", css("--ok")).text(fmt(v, 1));
+  }
+}
+
+// Rosca simples.
+function rosca(alvo, partes, { aria, centro }) {
+  alvo.replaceChildren();
+  const larg = alvo.clientWidth, alt = 200, r = Math.min(alt, larg) / 2 - 4;
+  const svg = d3.select(alvo).append("svg").attr("width", larg).attr("height", alt).attr("role", "img").attr("aria-label", aria);
+  const g = svg.append("g").attr("transform", `translate(${larg / 2},${alt / 2})`);
+  const arcos = d3.pie().sort(null).value((d) => d.valor)(partes.filter((p) => p.valor > 0));
+  const t = dica(alvo);
+  g.selectAll("path").data(arcos).join("path").attr("d", d3.arc().innerRadius(r * 0.64).outerRadius(r).padAngle(0.015).cornerRadius(3)).attr("fill", (d) => d.data.cor)
+    .on("pointermove", (ev, d) => t.mostra(ev, d.data.nome, [`${fmt(d.data.valor)} pessoas`, fmtPct(d.data.valor / d3.sum(partes, (p) => p.valor) * 100)])).on("pointerleave", () => t.esconde());
+  g.append("text").attr("text-anchor", "middle").attr("dy", "-0.1em").style("font", `400 22px ${css("--font")}`).style("fill", css("--on")).text(centro[0]);
+  g.append("text").attr("text-anchor", "middle").attr("dy", "1.4em").text(centro[1]);
+}
+
+function sparkline(svgEl, valores, cor) {
+  const s = d3.select(svgEl); s.selectAll("*").remove();
+  const v = valores.filter((x) => x != null);
+  if (v.length < 2) return;
+  const x = d3.scaleLinear().domain([0, valores.length - 1]).range([0, 88]);
+  const y = d3.scaleLinear().domain(d3.extent(v)).range([30, 2]);
+  if (y.domain()[0] === y.domain()[1]) y.domain([y.domain()[0] - 1, y.domain()[1] + 1]);
+  const ln = d3.line().defined((d) => d != null).x((_, i) => x(i)).y((d) => y(d)).curve(d3.curveMonotoneX);
+  const area = d3.area().defined((d) => d != null).x((_, i) => x(i)).y0(32).y1((d) => y(d)).curve(d3.curveMonotoneX);
+  s.append("path").datum(valores).attr("d", area).attr("fill", cor).attr("opacity", 0.12);
+  s.append("path").datum(valores).attr("d", ln).attr("fill", "none").attr("stroke", cor).attr("stroke-width", 2);
+  const ult = valores.length - 1;
+  if (valores[ult] != null) s.append("circle").attr("cx", x(ult)).attr("cy", y(valores[ult])).attr("r", 3).attr("fill", cor);
+}
+
+// ======================================================================
+// Tabela de dados (busca, ordenação, paginação, exportação CSV)
+// ======================================================================
+function tabela(alvoId, { colunas, linhas, chave, nomeArquivo, alternador = null, porPagina = 50, vazioTxt = "Nenhum registro no filtro escolhido." }) {
+  const alvo = $(alvoId);
+  const st = estado.tabelas[alvoId] ||= { busca: "", ordem: null, dir: 1, pagina: 0, alterna: alternador?.padrao ?? false };
+  const render = () => {
+    let ls = alternador && st.alterna ? linhas.filter(alternador.filtro) : linhas;
+    if (st.busca) { const q = semAcento(st.busca); ls = ls.filter((l) => colunas.some((c) => semAcento(c.texto ? c.texto(l) : l[c.k]).includes(q))); }
+    if (st.ordem) { const c = colunas.find((c) => c.k === st.ordem); const v = c.ordem || ((l) => l[c.k]); ls = [...ls].sort((a, b) => { const x = v(a), y = v(b); return (x == null) - (y == null) || (x < y ? -1 : x > y ? 1 : 0) * st.dir; }); }
+    const paginas = Math.max(1, Math.ceil(ls.length / porPagina));
+    st.pagina = Math.min(st.pagina, paginas - 1);
+    const vis = ls.slice(st.pagina * porPagina, (st.pagina + 1) * porPagina);
+    const busca = el("label", { class: "tabela-busca" }, icone("search"), el("input", { type: "search", placeholder: "Filtrar nesta tabela", value: st.busca, "aria-label": "Filtrar tabela",
+      oninput: (e) => { st.busca = e.target.value; st.pagina = 0; render(); const i = alvo.querySelector("input[type=search]"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }));
+    const ferr = el("div", { class: "tabela-ferr" }, busca,
+      el("div", { style: "display:flex;gap:12px;align-items:center;flex-wrap:wrap" },
+        alternador && el("label", { class: "alternar" }, el("input", { type: "checkbox", checked: st.alterna, onchange: (e) => { st.alterna = e.target.checked; st.pagina = 0; render(); } }), alternador.rotulo),
+        el("button", { class: "btn-texto", onclick: () => exportaCSV(nomeArquivo, colunas, ls) }, icone("download"), "Exportar CSV")));
+    const cab = el("tr", {}, colunas.map((c) => el("th", { class: c.num ? "num" : "", "aria-sort": st.ordem === c.k ? (st.dir > 0 ? "ascending" : "descending") : null, scope: "col",
+      onclick: () => { st.dir = st.ordem === c.k ? -st.dir : (c.num ? -1 : 1); st.ordem = c.k; render(); } }, c.t, " ", icone(st.ordem === c.k && st.dir < 0 ? "arrow_downward" : "arrow_upward"))));
+    const corpo = el("tbody", {}, vis.length ? vis.map((l) => el("tr", {}, colunas.map((c) => {
+      const v = c.html ? c.html(l) : c.texto ? c.texto(l) : l[c.k];
+      return el("td", { class: [c.num && "num", c.quebra && "quebra"].filter(Boolean).join(" ") }, v ?? "");
+    }))) : el("tr", {}, el("td", { colspan: colunas.length, style: "text-align:center;color:var(--on-3);padding:32px" }, vazioTxt)));
+    const pag = el("div", { class: "paginacao" },
+      `${fmt(ls.length ? st.pagina * porPagina + 1 : 0)}–${fmt(Math.min(ls.length, (st.pagina + 1) * porPagina))} de ${fmt(ls.length)}`,
+      el("button", { class: "icone-btn", title: "Página anterior", disabled: st.pagina === 0, onclick: () => { st.pagina--; render(); } }, el("span", { class: "ms", style: "transform:rotate(-90deg)" }, "arrow_upward")),
+      el("button", { class: "icone-btn", title: "Próxima página", disabled: st.pagina >= paginas - 1, onclick: () => { st.pagina++; render(); } }, el("span", { class: "ms", style: "transform:rotate(90deg)" }, "arrow_upward")));
+    alvo.replaceChildren(el("div", { style: "display:grid;gap:12px" }, ferr, el("div", { class: "tabela-caixa" }, el("table", {}, el("thead", {}, cab), corpo)), pag));
+  };
+  render();
+}
+function exportaCSV(nome, colunas, linhas) {
+  const esc = (v) => { const s = String(v ?? ""); return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const txt = "﻿" + [colunas.map((c) => esc(c.t)).join(";"), ...linhas.map((l) => colunas.map((c) => esc(c.csv ? c.csv(l) : c.texto ? c.texto(l) : l[c.k])).join(";"))].join("\r\n");
+  const a = el("a", { href: URL.createObjectURL(new Blob([txt], { type: "text/csv;charset=utf-8" })), download: `${nome}.csv` });
+  document.body.append(a); a.click(); a.remove();
+}
+const pilula = (sit) => sit === "fora" ? el("span", { class: "pilula ruim" }, "Fora") : sit === "dentro" ? el("span", { class: "pilula bom" }, "Dentro") : el("span", { class: "pilula neutro" }, "Sem ref.");
+
+// ======================================================================
+// Desenho geral
+// ======================================================================
+function nomeSistema(c) { return estado.base.formas[c]?.nome || c || ""; }
+function periodoTexto(f) {
+  if (f.ano && f.mes) return `${MESES[f.mes - 1]} de ${f.ano}`;
+  if (f.ano) return String(f.ano);
+  if (f.mes) return `${MESES[f.mes - 1]} (todos os anos)`;
+  return "todo o período";
+}
+function desenha() {
+  const b = estado.base, f = filtros();
+  gravaHash();
+  ["sistema", "ano", "mes", "param"].forEach((k) => $("chip-" + k).classList.toggle("ativo", !!$("f-" + k).value));
+  $("b-limpar").hidden = !["sistema", "ano", "mes", "param"].some((k) => $("f-" + k).value);
+  $("ctx-nome").textContent = `${estado.municipio.n} · ${estado.municipio.u}`;
+  const quando = b.baixadoEm ? new Date(b.baixadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "—";
+  $("ctx-meta").replaceChildren(
+    el("span", {}, icone("location_on"), ` IBGE ${b.ibge}`),
+    el("span", {}, icone("history"), ` Dados copiados em ${quando}`),
+    el("span", {}, icone("science"), ` ${fmt(b.vigilancia.length)} análises de vigilância`),
+    ...(b.falhas ? [el("span", { style: "color:var(--warn)" }, icone("error"), ` ${b.falhas} trecho(s) com erro na API`)] : []));
+  if (estado.aba === "geral") desenhaGeral(f);
+  else if (estado.aba === "vigilancia") desenhaVigilancia(f);
+  else if (estado.aba === "controle") desenhaControle(f);
+  else if (estado.aba === "semestral") desenhaSemestral(f);
+  else desenhaCadastro(f);
+}
+
+function filtraVig(f, { usaAno = true, usaMes = true, usaParam = true, ano = null } = {}) {
+  const a = ano ?? f.ano;
+  return estado.base.vigilancia.filter((r) => (!f.sistema || r.forma === f.sistema) && (!usaAno || !a || r.ano === a) && (!usaMes || !f.mes || r.mes === f.mes) && (!usaParam || !f.param || r.parametro === f.param));
+}
+function resumoVig(vig) {
+  const comRef = vig.filter((r) => r.sit !== "sem"), dentro = comRef.filter((r) => r.sit === "dentro").length;
+  const ecoli = vig.filter((r) => r.tipo === "ecoli"), cloro = vig.filter((r) => r.tipo === "cloro" && r.valor != null);
+  return { n: vig.length, amostras: new Set(vig.map((r) => r.amostra)).size, comRef: comRef.length, fora: comRef.length - dentro,
+    conf: comRef.length ? dentro / comRef.length * 100 : null, ecoli: ecoli.filter((r) => r.sit === "fora").length, ecoliN: ecoli.length,
+    cloroB: cloro.filter((r) => r.valor < 0.2).length, cloroN: cloro.length };
+}
+function delta(alvo, atual, anterior, { tipo = "pct", melhorMaior = true, rotulo }) {
+  if (anterior == null || atual == null) return null;
+  let dif, txt;
+  if (tipo === "pp") { dif = atual - anterior; txt = `${dif >= 0 ? "+" : ""}${fmt(dif, 1)} p.p.`; }
+  else if (tipo === "abs") { dif = atual - anterior; txt = `${dif >= 0 ? "+" : ""}${fmt(dif)}`; }
+  else { if (!anterior) return null; dif = (atual - anterior) / anterior * 100; txt = `${dif >= 0 ? "+" : ""}${fmt(dif, 0)}%`; }
+  if (Math.abs(dif) < 0.05) return [el("span", { class: "delta neutro", style: "padding-left:8px" }, "igual"), ` ${rotulo}`];
+  const classe = (dif > 0) === melhorMaior ? "bom" : "ruim";
+  if (tipo === "pct" && Math.abs(dif) >= 1000) txt = `${dif >= 0 ? "+" : ""}${fmt(atual / anterior, 0)}×`;
+  return [el("span", { class: "delta " + classe }, icone(dif >= 0 ? "arrow_upward" : "arrow_downward"), txt), ` ${rotulo}`];
+}
+function kpi(id, valor, linha2, estadoCor = null) {
+  const k = $(id);
+  k.querySelector(".valor").textContent = valor;
+  // cada pedaço vira um item próprio, para o espaçamento do flex separar "vs. 2024" de "cadastro de 2025"
+  const pedacos = [], partes = [linha2].flat(Infinity).filter((x) => x != null && x !== false && x !== "");
+  for (let i = 0; i < partes.length; i++) {
+    const p = partes[i];
+    if (p.nodeType && typeof partes[i + 1] === "string" && /^ vs\./.test(partes[i + 1])) { pedacos.push(el("span", {}, p, partes[i + 1])); i++; }
+    else pedacos.push(p.nodeType ? p : el("span", {}, p));
+  }
+  k.querySelector(".linha2").replaceChildren(...pedacos);
+  k.classList.remove("estado-bom", "estado-ruim", "estado-alerta");
+  if (estadoCor) k.classList.add("estado-" + estadoCor);
+}
+
+// ---------------- Visão geral ----------------
+function seriesTempo(f, vigBase) {
+  // Por ano (todos os anos) ou por mês do ano escolhido.
+  const porAno = !f.ano;
+  const anos = [...new Set(estado.base.vigilancia.map((r) => r.ano))].filter(Boolean).sort();
+  const chaves = porAno ? (anos.length ? d3.range(anos[0], anos[anos.length - 1] + 1) : []) : d3.range(1, 13);
+  const itens = new Map(chaves.map((k) => [k, { chave: k, rotulo: porAno ? String(k) : MES_C[k - 1], partes: {}, total: 0 }]));
+  for (const r of vigBase) {
+    if (porAno && f.mes && r.mes !== f.mes) continue;
+    const it = itens.get(porAno ? r.ano : r.mes);
+    if (!it) continue;
+    it.partes[r.sit] = (it.partes[r.sit] || 0) + 1; it.total++;
+  }
+  for (const it of itens.values()) { const cr = (it.partes.dentro || 0) + (it.partes.fora || 0); it.conf = cr ? (it.partes.dentro || 0) / cr * 100 : null; }
+  return { porAno, itens: [...itens.values()] };
+}
+
+function desenhaGeral(f) {
+  const vig = filtraVig(f);
+  const R = resumoVig(vig);
+  const anterior = f.ano ? resumoVig(filtraVig(f, { ano: f.ano - 1 })) : null;
+  const temAnt = anterior && anterior.n > 0;
+  const rotAnt = f.ano ? `vs. ${f.mes ? MES_C[f.mes - 1] + "/" : ""}${f.ano - 1}` : "";
+  const serie = seriesTempo(f, filtraVig(f, { usaAno: !!f.ano, usaMes: false }));
+  const sp = (fn) => serie.itens.map(fn);
+
+  kpi("kpi-analises", fmt(R.n), [`${fmt(R.amostras)} amostras`, temAnt ? delta(null, R.n, anterior.n, { melhorMaior: true, rotulo: rotAnt }) : null]);
+  sparkline($("kpi-analises").querySelector(".spark"), sp((d) => d.total || null), css("--c1"));
+  kpi("kpi-conf", fmtPct(R.conf), [temAnt ? delta(null, R.conf, anterior.conf, { tipo: "pp", rotulo: rotAnt }) : `${fmt(R.comRef)} com referência`],
+    R.conf == null ? null : R.conf >= 95 ? "bom" : R.conf >= 85 ? "alerta" : "ruim");
+  sparkline($("kpi-conf").querySelector(".spark"), sp((d) => d.conf), css("--c-ok"));
+  kpi("kpi-ecoli", fmt(R.ecoli), [`de ${fmt(R.ecoliN)} análises`, temAnt ? delta(null, R.ecoli, anterior.ecoli, { tipo: "abs", melhorMaior: false, rotulo: rotAnt }) : null],
+    R.ecoliN ? (R.ecoli ? "ruim" : "bom") : null);
+  kpi("kpi-cloro", fmt(R.cloroB), [`de ${fmt(R.cloroN)} medições`, temAnt ? delta(null, R.cloroB, anterior.cloroB, { tipo: "abs", melhorMaior: false, rotulo: rotAnt }) : null],
+    R.cloroN ? (R.cloroB ? "alerta" : "bom") : null);
+  $("kpi-ecoli").querySelector(".spark").replaceChildren(); $("kpi-cloro").querySelector(".spark").replaceChildren();
+
+  // tendência
+  $("t-tendencia").textContent = serie.porAno ? "Conformidade por ano" : `Conformidade mês a mês em ${f.ano}`;
+  $("s-tendencia").textContent = (serie.porAno ? "Escolha um ano para ver mês a mês." : "Análises da vigilância por mês de coleta.") + (f.param ? ` Parâmetro: ${f.param}.` : "") + (serie.porAno && f.mes ? ` Só ${MESES[f.mes - 1]}.` : "");
+  if (!serie.itens.some((d) => d.total)) vazio($("g-tendencia"), "Sem análises da vigilância no filtro escolhido.");
+  else combo($("g-tendencia"), serie.itens, [["dentro", css("--c-ok")], ["fora", css("--c-bad")], ["sem", css("--c-neutral")]], {
+    linha: { valor: (d) => d.conf, cor: css("--c1") }, destaque: !serie.porAno && f.mes ? f.mes : null,
+    aria: "Colunas com análises da vigilância por período e linha com a porcentagem dentro do padrão",
+    dicaFn: (d) => [serie.porAno ? String(d.chave) : `${MESES[d.chave - 1]} de ${f.ano}`, d.total ? [
+      [css("--c-ok"), `${fmt(d.partes.dentro || 0)} dentro`], [css("--c-bad"), `${fmt(d.partes.fora || 0)} fora`], [css("--c-neutral"), `${fmt(d.partes.sem || 0)} sem referência`],
+      [css("--c1"), `${fmtPct(d.conf)} dentro do padrão`]] : ["Sem coletas registradas"]] });
+
+  // por parâmetro (ignora o filtro de parâmetro para comparar todos)
+  const vigP = filtraVig(f, { usaParam: false });
+  const porParam = d3.rollups(vigP, (v) => ({ dentro: v.filter((r) => r.sit === "dentro").length, fora: v.filter((r) => r.sit === "fora").length, sem: v.filter((r) => r.sit === "sem").length }), (r) => r.parametro)
+    .map(([nome, p]) => ({ nome, partes: p, total: p.dentro + p.fora + p.sem })).sort((a, b) => b.partes.fora - a.partes.fora || b.total - a.total);
+  if (!porParam.length) vazio($("g-parametro"), "Sem análises no filtro escolhido.");
+  else barrasH($("g-parametro"), porParam, [["dentro", css("--c-ok")], ["fora", css("--c-bad")], ["sem", css("--c-neutral")]], {
+    aria: "Barras horizontais por parâmetro com análises dentro e fora da referência",
+    rotulo: (d) => d.partes.fora ? [`${fmt(d.partes.fora)} fora`, "rot-ruim"] : ["0 fora", ""],
+    dicaFn: (d) => [d.nome, [`${fmt(d.total)} análises`, [css("--c-ok"), `${fmt(d.partes.dentro)} dentro`], [css("--c-bad"), `${fmt(d.partes.fora)} fora (${fmtPct(d.partes.fora / Math.max(1, d.partes.dentro + d.partes.fora) * 100)})`]]] });
+
+  // bairros
+  const porBairro = d3.rollups(vig.filter((r) => r.sit !== "sem"), (v) => ({ fora: v.filter((r) => r.sit === "fora").length, dentro: v.filter((r) => r.sit === "dentro").length }), (r) => r.bairro || "Não informado")
+    .map(([nome, p]) => ({ nome, partes: p, total: p.fora + p.dentro })).filter((d) => d.partes.fora > 0).sort((a, b) => b.partes.fora - a.partes.fora).slice(0, 10)
+    .map((d) => ({ ...d, partes: { fora: d.partes.fora }, total: d.partes.fora, totalAnalises: d.total }));
+  if (!porBairro.length) vazio($("g-bairros"), "Nenhuma análise fora do padrão no filtro escolhido.", "check_circle");
+  else barrasH($("g-bairros"), porBairro, [["fora", css("--c-bad")]], {
+    aria: "Barras horizontais com as áreas que tiveram mais análises fora do padrão",
+    rotulo: (d) => [`${fmt(d.partes.fora)} (${fmtPct(d.partes.fora / d.totalAnalises * 100, 0)})`, "rot-ruim"],
+    dicaFn: (d) => [d.nome, [`${fmt(d.totalAnalises)} análises com referência`, [css("--c-bad"), `${fmt(d.partes.fora)} fora do padrão`]]] });
+
+  // mapa de calor
+  const vigCalor = filtraVig(f, { usaParam: false, usaMes: !!f.ano ? false : true });
+  const colsCalor = serie.porAno ? serie.itens.map((d) => d.chave) : d3.range(1, 13);
+  const linhasCalor = [...new Set(vigCalor.filter((r) => r.tipo).map((r) => r.parametro))].sort();
+  $("t-calor").textContent = serie.porAno ? "Mapa de calor: % fora do padrão por parâmetro e ano" : `Mapa de calor: % fora do padrão por parâmetro e mês de ${f.ano}`;
+  $("s-calor").textContent = "Quanto mais vermelho, maior a parcela de análises fora da referência. Contorno tracejado = sem análises.";
+  const idx = d3.rollup(vigCalor.filter((r) => r.sit !== "sem"), (v) => ({ n: v.length, fora: v.filter((r) => r.sit === "fora").length }), (r) => r.parametro, (r) => serie.porAno ? r.ano : r.mes);
+  if (!linhasCalor.length) vazio($("g-calor"), "Sem análises com referência no filtro escolhido.");
+  else mapaCalor($("g-calor"), linhasCalor, colsCalor, (l, c) => { const v = idx.get(l)?.get(c); return v ? { ...v, pct: v.fora / v.n * 100 } : null; }, {
+    aria: "Mapa de calor com a porcentagem de análises fora do padrão por parâmetro e período",
+    rotuloCol: (c, longo) => serie.porAno ? String(c) : longo ? `${MESES[c - 1]} de ${f.ano}` : MES_C[c - 1] });
+
+  // destaques
+  const ins = [];
+  const piorP = porParam.filter((p) => p.partes.fora).sort((a, b) => b.partes.fora / (b.partes.dentro + b.partes.fora) - a.partes.fora / (a.partes.dentro + a.partes.fora))[0];
+  if (!R.n) ins.push(["info", `Não há análises da vigilância em ${periodoTexto(f)}${f.sistema ? " para este sistema" : ""}.`]);
+  else {
+    ins.push(["check_circle", [el("b", {}, fmtPct(R.conf)), ` das ${fmt(R.comRef)} análises com referência ficaram dentro do padrão em ${periodoTexto(f)}.`]]);
+    if (piorP) ins.push(["error", ["O parâmetro com mais falhas proporcionais é ", el("b", {}, piorP.nome), `: ${fmtPct(piorP.partes.fora / (piorP.partes.dentro + piorP.partes.fora) * 100)} das análises fora da referência.`]]);
+    if (R.ecoli) ins.push(["error", [el("b", {}, `${fmt(R.ecoli)} ${R.ecoli === 1 ? "análise" : "análises"} com E. coli`), " — indica contaminação fecal e pede investigação imediata."]]);
+    else if (R.ecoliN) ins.push(["check_circle", [`Nenhuma presença de E. coli em ${fmt(R.ecoliN)} análises.`]]);
+    if (porBairro[0]) ins.push(["location_on", ["A área com mais análises fora do padrão é ", el("b", {}, porBairro[0].nome), ` (${fmt(porBairro[0].partes.fora)}).`]]);
+    if (!serie.porAno) {
+      const semColeta = serie.itens.filter((d) => !d.total).map((d) => MES_C[d.chave - 1]);
+      const ultimoMes = d3.max(estado.base.vigilancia.filter((r) => r.ano === f.ano), (r) => r.mes) || 0;
+      const falt = semColeta.filter((m) => MES_C.indexOf(m) + 1 <= ultimoMes);
+      if (falt.length) ins.push(["info", [`Meses de ${f.ano} sem coleta registrada: `, el("b", {}, falt.join(", ")), "."]]);
+      const pior = serie.itens.filter((d) => d.conf != null && d.total >= 5).sort((a, b) => a.conf - b.conf)[0];
+      if (pior && pior.conf < 100) ins.push(["bar_chart", ["Pior mês: ", el("b", {}, MESES[pior.chave - 1]), ` (${fmtPct(pior.conf)} dentro do padrão).`]]);
+    } else if (temAnt) { /* sem ano escolhido não há comparação */ }
+    if (temAnt && R.conf != null && anterior.conf != null) {
+      const d = R.conf - anterior.conf;
+      ins.push([d >= 0 ? "arrow_upward" : "arrow_downward", [`Em relação a ${f.ano - 1}, a conformidade ${d >= 0 ? "subiu" : "caiu"} `, el("b", {}, `${fmt(Math.abs(d), 1)} p.p.`)]]);
+    }
+  }
+  $("insights").replaceChildren(...ins.map(([ic, t]) => el("li", {}, icone(ic), el("span", {}, t))));
+}
+
+// ---------------- Vigilância ----------------
+function desenhaVigilancia(f) {
+  const vig = filtraVig(f);
+  const param = f.param || (() => { const c = d3.rollups(vig.filter((r) => r.valor != null && LIMITES[r.tipo]), (v) => v.length, (r) => r.parametro).sort((a, b) => b[1] - a[1]); return c[0]?.[0]; })();
+  const vals = vig.filter((r) => r.parametro === param && r.valor != null).map((r) => r.valor);
+  const tipo = tipoParametro(param || "");
+  $("t-dist").textContent = param ? `Distribuição dos resultados: ${param}` : "Distribuição dos resultados";
+  $("s-dist").textContent = param ? `${fmt(vals.length)} análises em ${periodoTexto(f)}. Faixa verde = valores dentro da referência (${LIMITES[tipo]?.ref || "sem referência numérica"}).${f.param ? "" : " Escolha outro parâmetro no filtro."}` : "";
+  if (!vals.length) vazio($("g-dist"), tipo === "ecoli" || tipo === "coliformes" ? "Este parâmetro é presença/ausência: veja a tabela abaixo." : "Sem resultados numéricos no filtro escolhido.");
+  else histograma($("g-dist"), vals, LIMITES[tipo], { unidade: (param.match(/\(([^)]+)\)/) || [])[1] || "", aria: `Histograma dos resultados de ${param}` });
+
+  tabela("tab-vig", {
+    nomeArquivo: `vigilancia-${estado.base.ibge}`,
+    alternador: { rotulo: "Só fora do padrão", filtro: (r) => r.sit === "fora", padrao: false },
+    linhas: [...vig].sort((a, b) => (b.data || "").localeCompare(a.data || "")),
+    colunas: [
+      { k: "data", t: "Coleta", texto: (r) => dataBR(r.data), ordem: (r) => r.data, csv: (r) => r.data },
+      { k: "amostra", t: "Amostra" },
+      { k: "parametro", t: "Parâmetro" },
+      { k: "resultado", t: "Resultado", num: true, ordem: (r) => r.valor ?? (r.resultado === "PRESENTE" ? 1 : 0) },
+      { k: "ref", t: "Referência" },
+      { k: "sit", t: "Situação", html: (r) => pilula(r.sit), texto: (r) => ({ fora: "Fora", dentro: "Dentro", sem: "Sem referência" })[r.sit] },
+      { k: "bairro", t: "Bairro / área" },
+      { k: "procedencia", t: "Procedência" },
+      { k: "ponto", t: "Ponto de coleta" },
+      { k: "forma", t: "Sistema", texto: (r) => nomeSistema(r.forma) },
+    ] });
+}
+
+// ---------------- Controle ----------------
+function desenhaControle(f) {
+  const b = estado.base;
+  const ctl = b.controle.filter((r) => (!f.sistema || r.forma === f.sistema) && (!f.ano || r.ano === f.ano) && (!f.mes || r.mes === f.mes));
+  const soma = (filtro) => d3.sum(ctl.filter(filtro), (r) => r.valor);
+  const analisadas = soma((r) => /^Número de amostras analisadas/i.test(r.campo));
+  const ecoliN = soma((r) => /Escherichia/i.test(r.parametro) && /^Número de amostras analisadas/i.test(r.campo));
+  const ecoliP = soma((r) => /Escherichia/i.test(r.parametro) && /presença/i.test(r.campo));
+  const colN = soma((r) => /coliformes totais/i.test(r.parametro) && /^Número de amostras analisadas/i.test(r.campo));
+  const colP = soma((r) => /coliformes totais/i.test(r.parametro) && /presença/i.test(r.campo));
+  const turN = soma((r) => /Turbidez/i.test(r.parametro) && /^Número de amostras analisadas/i.test(r.campo));
+  const turA = soma((r) => /Turbidez/i.test(r.parametro) && /> ?5,0 ?uT/i.test(r.campo));
+  kpi("kpi-c-analises", fmt(analisadas), [`em ${periodoTexto(f)}`]);
+  kpi("kpi-c-ecoli", fmt(ecoliP), [`de ${fmt(ecoliN)} análises · ${ecoliN ? fmtPct(ecoliP / ecoliN * 100, 2) : "—"}`], ecoliN ? (ecoliP ? "ruim" : "bom") : null);
+  kpi("kpi-c-colif", fmt(colP), [`de ${fmt(colN)} análises · ${colN ? fmtPct(colP / colN * 100, 2) : "—"}`], colN ? (colP / colN > 0.05 ? "ruim" : colP ? "alerta" : "bom") : null);
+  kpi("kpi-c-turb", fmt(turA), [`de ${fmt(turN)} análises de turbidez`], turN ? (turA ? "alerta" : "bom") : null);
+
+  const porAno = !f.ano;
+  const base = b.controle.filter((r) => /Escherichia/i.test(r.parametro) && (!f.sistema || r.forma === f.sistema) && (!f.ano || r.ano === f.ano));
+  const anos = [...new Set(b.controle.map((r) => r.ano))].filter(Boolean).sort();
+  const chaves = porAno ? (anos.length ? d3.range(anos[0], anos[anos.length - 1] + 1) : []) : d3.range(1, 13);
+  const itens = new Map(chaves.map((k) => [k, { chave: k, rotulo: porAno ? String(k) : MES_C[k - 1], partes: {}, total: 0, presenca: 0 }]));
+  for (const r of base) {
+    if (porAno && f.mes && r.mes !== f.mes) continue;
+    const it = itens.get(porAno ? r.ano : r.mes); if (!it) continue;
+    if (/^Número de amostras analisadas/i.test(r.campo)) { it.total += r.valor; it.partes.n = it.total; }
+    else if (/presença/i.test(r.campo)) it.presenca += r.valor;
+  }
+  $("t-ctl").replaceChildren("Análises de ", el("i", {}, "E. coli"), porAno ? " informadas por ano" : ` informadas por mês em ${f.ano}`);
+  $("s-ctl").textContent = "O número em vermelho acima da coluna é quantas tiveram presença de E. coli." + (porAno && f.mes ? ` Só ${MESES[f.mes - 1]}.` : "");
+  const lista = [...itens.values()];
+  if (!lista.some((d) => d.total)) vazio($("g-ctl"), "O prestador não informou análises de E. coli no filtro escolhido.");
+  else combo($("g-ctl"), lista, [["n", css("--c1")]], { rotulo: (d) => d.presenca ? fmt(d.presenca) : "", destaque: !porAno && f.mes ? f.mes : null,
+    aria: "Colunas com as análises de E. coli informadas pelo prestador",
+    dicaFn: (d) => [porAno ? String(d.chave) : `${MESES[d.chave - 1]} de ${f.ano}`, d.total ? [[css("--c1"), `${fmt(d.total)} análises`], [css("--c-bad"), `${fmt(d.presenca)} com presença`]] : ["Sem registro"]] });
+
+  const agrup = d3.rollups(ctl, (v) => ({ analisadas: d3.sum(v.filter((r) => /^Número de amostras analisadas/i.test(r.campo)), (r) => r.valor), presenca: d3.sum(v.filter((r) => /presença/i.test(r.campo)), (r) => r.valor) }), (r) => r.parametro, (r) => r.ponto)
+    .flatMap(([p, pts]) => pts.map(([ponto, v]) => ({ parametro: p, ponto, ...v })));
+  tabela("tab-ctl", {
+    nomeArquivo: `controle-${estado.base.ibge}`, linhas: agrup.sort((a, b) => a.parametro.localeCompare(b.parametro) || b.analisadas - a.analisadas),
+    colunas: [
+      { k: "parametro", t: "Parâmetro" }, { k: "ponto", t: "Ponto de monitoramento" },
+      { k: "analisadas", t: "Análises informadas", num: true, texto: (r) => fmt(r.analisadas), csv: (r) => r.analisadas, ordem: (r) => r.analisadas },
+      { k: "presenca", t: "Com presença (microbiológicos)", num: true, texto: (r) => /coli/i.test(r.parametro) ? fmt(r.presenca) : "", csv: (r) => /coli/i.test(r.parametro) ? r.presenca : "", ordem: (r) => r.presenca },
+    ] });
+}
+
+// ---------------- Controle semestral ----------------
+// resultado -1 = não detectado; acima do VMP quando o resultado passa do valor máximo permitido da linha.
+function situacaoSem(r) {
+  if (r.resultado == null) return "sem";
+  if (r.resultado < 0) return "nd";
+  if (r.vmp == null || !(r.vmp > 0)) return "sem";
+  // o VMP da Portaria vale para a água tratada; na captação (água bruta) passar dele não é descumprimento
+  if (r.resultado > r.vmp) return /CAPTA/.test(r.ponto) ? "bruta" : "acima";
+  return "abaixo";
+}
+const NOME_SIT_SEM = { abaixo: "Abaixo do VMP", nd: "Não detectado", acima: "Acima do VMP", bruta: "Acima do VMP na água bruta", sem: "Sem VMP" };
+function desenhaSemestral(f) {
+  const todos = (estado.base.semestral || []).filter((r) => !f.sistema || r.forma === f.sistema);
+  todos.forEach((r) => { r.sit ??= situacaoSem(r); r.pct ??= ["abaixo", "acima", "bruta"].includes(r.sit) ? r.resultado / r.vmp * 100 : null; });
+  const sem = todos.filter((r) => !f.ano || r.ano === f.ano);
+  const acima = sem.filter((r) => r.sit === "acima"), nd = sem.filter((r) => r.sit === "nd"), bruta = sem.filter((r) => r.sit === "bruta");
+  const params = new Set(sem.map((r) => r.parametro));
+  const tratada = sem.filter((r) => !/CAPTA/.test(r.ponto));
+  const maior = tratada.filter((r) => r.pct != null).sort((a, b) => b.pct - a.pct)[0];
+  kpi("kpi-s-analises", fmt(sem.length), [`${fmt(params.size)} parâmetros · ${f.ano ? f.ano : "todos os anos"}`]);
+  kpi("kpi-s-acima", fmt(acima.length), [acima.length ? `${fmt(new Set(acima.map((r) => r.parametro)).size)} parâmetro(s) na água tratada` : "nenhum na água tratada", bruta.length ? `+ ${fmt(bruta.length)} na água bruta (captação)` : null], sem.length ? (acima.length ? "ruim" : "bom") : null);
+  kpi("kpi-s-nd", sem.length ? fmtPct(nd.length / sem.length * 100, 0) : "—", [`${fmt(nd.length)} resultados abaixo do limite de detecção`]);
+  kpi("kpi-s-maior", maior ? fmtPct(maior.pct, 0) : "—", [maior ? `${maior.parametro} · ${dataBR(maior.data)} · água tratada` : "sem resultados quantificados"], maior ? (maior.pct > 100 ? "ruim" : maior.pct > 50 ? "alerta" : "bom") : null);
+
+  // mais perto do limite: maior % do VMP por parâmetro
+  const alvoLim = $("g-s-limite");
+  const porParam = d3.rollups(tratada.filter((r) => r.pct != null), (v) => v.sort((a, b) => b.pct - a.pct)[0], (r) => r.parametro).map(([, r]) => r).sort((a, b) => b.pct - a.pct).slice(0, 15);
+  if (!porParam.length) vazio(alvoLim, "Sem resultados quantificados no filtro escolhido.");
+  else {
+    alvoLim.replaceChildren();
+    const larg = alvoLim.clientWidth, lh = 28, alt = porParam.length * lh + 30;
+    const svg = d3.select(alvoLim).append("svg").attr("width", larg).attr("height", alt).attr("role", "img").attr("aria-label", "Barras com o maior resultado de cada parâmetro como porcentagem do valor máximo permitido");
+    const nomes = svg.append("g").selectAll("text").data(porParam).join("text").attr("class", "rot").text((d) => d.parametro);
+    const esq = Math.min(larg * 0.4, (d3.max(nomes.nodes(), (n) => n.getComputedTextLength()) || 60) + 12);
+    nomes.each(function () { const t = d3.select(this); let s = t.text(); while (this.getComputedTextLength() > esq - 12 && s.length > 4) { s = s.slice(0, -2); t.text(s + "…"); } });
+    const x = d3.scaleLinear().domain([0, Math.max(110, d3.max(porParam, (d) => Math.min(d.pct, 400)))]).range([esq, larg - 70]);
+    const y = d3.scaleBand().domain(porParam.map((d) => d.parametro + d.data)).range([0, alt - 26]).padding(0.3);
+    svg.insert("g", ":first-child").attr("class", "grade").attr("transform", `translate(0,${alt - 26})`).call(d3.axisBottom(x).ticks(5).tickSize(-(alt - 26)).tickFormat((v) => v + "%"));
+    nomes.attr("x", esq - 10).attr("y", (d) => y(d.parametro + d.data) + y.bandwidth() / 2).attr("dy", "0.35em").attr("text-anchor", "end");
+    const cor = (p) => p > 100 ? css("--c-bad") : p > 50 ? css("--c3") : css("--c1");
+    svg.append("g").selectAll("rect").data(porParam).join("rect").attr("x", x(0)).attr("y", (d) => y(d.parametro + d.data)).attr("height", y.bandwidth()).attr("rx", 3)
+      .attr("width", (d) => Math.max(1, x(Math.min(d.pct, x.domain()[1])) - x(0))).attr("fill", (d) => cor(d.pct));
+    svg.append("g").selectAll("text").data(porParam).join("text").attr("x", (d) => x(Math.min(d.pct, x.domain()[1])) + 6).attr("y", (d) => y(d.parametro + d.data) + y.bandwidth() / 2).attr("dy", "0.35em")
+      .attr("class", (d) => d.pct > 100 ? "rot-ruim" : "").text((d) => fmtPct(d.pct, d.pct < 10 ? 1 : 0));
+    svg.append("line").attr("x1", x(100)).attr("x2", x(100)).attr("y1", -4).attr("y2", alt - 26).attr("stroke", css("--c-bad")).attr("stroke-width", 1.5).attr("stroke-dasharray", "4 3");
+    const t = dica(alvoLim);
+    svg.append("g").selectAll("rect").data(porParam).join("rect").attr("x", 0).attr("width", larg).attr("y", (d) => y(d.parametro + d.data) - 3).attr("height", y.bandwidth() + 6).attr("fill", "transparent")
+      .on("pointermove", (ev, d) => t.mostra(ev, d.parametro, [`Maior resultado: ${fmt(d.resultado, 6)} ${d.unidade}`, `VMP: ${fmt(d.vmp, 6)} ${d.unidade}`, `${fmtPct(d.pct, 1)} do VMP`, `${d.ponto} · ${dataBR(d.data)}`]))
+      .on("pointerleave", () => t.esconde());
+  }
+
+  // por grupo
+  const porGrupo = d3.rollups(sem, (v) => ({ abaixo: v.filter((r) => r.sit === "abaixo").length, nd: v.filter((r) => r.sit === "nd").length, bruta: v.filter((r) => r.sit === "bruta").length, acima: v.filter((r) => r.sit === "acima").length }), (r) => r.grupo || "Sem grupo")
+    .map(([nome, p]) => ({ nome, partes: p, total: p.abaixo + p.nd + p.bruta + p.acima })).filter((d) => d.total).sort((a, b) => b.total - a.total);
+  if (!porGrupo.length) vazio($("g-s-grupo"), "Sem análises no filtro escolhido.");
+  else barrasH($("g-s-grupo"), porGrupo, [["abaixo", css("--c-ok")], ["nd", css("--c-neutral")], ["bruta", css("--c3")], ["acima", css("--c-bad")]], {
+    aria: "Barras por grupo de parâmetros com resultados abaixo do VMP, não detectados e acima do VMP",
+    rotulo: (d) => d.partes.acima ? [`${fmt(d.partes.acima)} acima`, "rot-ruim"] : [fmt(d.total), ""],
+    dicaFn: (d) => [d.nome, [`${fmt(d.total)} análises`, [css("--c-ok"), `${fmt(d.partes.abaixo)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd)} não detectados`], [css("--c3"), `${fmt(d.partes.bruta)} acima do VMP na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima)} acima do VMP na água tratada`]]] });
+
+  // por semestre
+  const chaves = [...new Set(todos.map((r) => r.ano * 10 + r.semestre))].filter(Boolean).sort();
+  const anos = chaves.length ? d3.range(Math.floor(chaves[0] / 10), Math.floor(chaves[chaves.length - 1] / 10) + 1) : [];
+  const itens = anos.flatMap((a) => [1, 2].map((s) => ({ chave: a * 10 + s, rotulo: `${s}º/${String(a).slice(2)}`, partes: {}, total: 0 })));
+  const idx = new Map(itens.map((i) => [i.chave, i]));
+  for (const r of todos) { const it = idx.get(r.ano * 10 + r.semestre); if (!it || r.sit === "sem") continue; it.partes[r.sit] = (it.partes[r.sit] || 0) + 1; it.total++; }
+  $("s-s-tempo").textContent = "Cada coluna é um semestre (1º = jan–jun, 2º = jul–dez), sempre com todos os anos. Semestres sem coluna não têm relatório no SISAGUA.";
+  if (!itens.some((d) => d.total)) vazio($("g-s-tempo"), "O prestador não informou análises semestrais.");
+  else {
+    combo($("g-s-tempo"), itens, [["abaixo", css("--c-ok")], ["nd", css("--c-neutral")], ["bruta", css("--c3")], ["acima", css("--c-bad")]], {
+      rotulo: (d) => d.partes.acima ? fmt(d.partes.acima) : "", aria: "Colunas com as análises semestrais por semestre",
+      dicaFn: (d) => [`${d.rotulo.replace("/", " semestre de 20")}`, d.total ? [[css("--c-ok"), `${fmt(d.partes.abaixo || 0)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd || 0)} não detectados`], [css("--c3"), `${fmt(d.partes.bruta || 0)} acima na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima || 0)} acima na água tratada`]] : ["Sem relatório"]] });  }
+
+  tabela("tab-sem", {
+    nomeArquivo: `semestral-${estado.base.ibge}`,
+    alternador: { rotulo: "Só acima do VMP (água tratada)", filtro: (r) => r.sit === "acima", padrao: false },
+    linhas: [...sem].sort((a, b) => (b.pct ?? -1) - (a.pct ?? -1)),
+    colunas: [
+      { k: "data", t: "Coleta", texto: (r) => dataBR(r.data), ordem: (r) => r.data, csv: (r) => r.data },
+      { k: "semestre", t: "Semestre", texto: (r) => `${r.semestre}º/${r.ano}`, ordem: (r) => r.ano * 10 + r.semestre },
+      { k: "grupo", t: "Grupo" },
+      { k: "parametro", t: "Parâmetro" },
+      { k: "resultado", t: "Resultado", num: true, texto: (r) => r.resultado == null ? "" : r.resultado < 0 ? "não detectado" : fmt(r.resultado, 6), csv: (r) => r.resultado, ordem: (r) => r.resultado },
+      { k: "unidade", t: "Unidade" },
+      { k: "vmp", t: "VMP", num: true, texto: (r) => r.vmp == null ? "" : fmt(r.vmp, 6), csv: (r) => r.vmp, ordem: (r) => r.vmp },
+      { k: "pct", t: "% do VMP", num: true, texto: (r) => r.pct == null ? "" : fmtPct(r.pct, r.pct < 10 ? 1 : 0), csv: (r) => r.pct == null ? "" : r.pct.toFixed(2), ordem: (r) => r.pct ?? -1 },
+      { k: "sit", t: "Situação", html: (r) => r.sit === "acima" ? el("span", { class: "pilula ruim" }, "Acima do VMP") : r.sit === "bruta" ? el("span", { class: "pilula neutro", style: "color:var(--warn)" }, "Acima na água bruta") : r.sit === "abaixo" ? el("span", { class: "pilula bom" }, "Abaixo do VMP") : el("span", { class: "pilula neutro" }, NOME_SIT_SEM[r.sit]), texto: (r) => NOME_SIT_SEM[r.sit] },
+      { k: "ponto", t: "Ponto de monitoramento" },
+      { k: "forma", t: "Sistema", texto: (r) => nomeSistema(r.forma) },
+    ] });
+}
+
+// ---------------- Cadastro ----------------
+async function iniciaCadastro() { if (SITE) return; await fetch("/api/cadastro/iniciar"); setTimeout(recarregaCadastro, 2000); }
+let timerCad = null;
+async function recarregaCadastro() {
+  clearTimeout(timerCad); timerCad = null;
+  if (!estado.municipio || SITE) return;
+  try {
+    const r = await fetch(`/api/cadastro/${estado.municipio.i}`);
+    if (r.ok) { const c = await r.json(); estado.base.cad = c; for (const x of [...c.populacao, ...c.tratamento]) if (x.forma && !estado.base.formas[x.forma]) estado.base.formas[x.forma] = { nome: x.nome, ano: x.ano, tipo: x.tipo }; }
+  } catch {}
+  if (estado.aba === "cadastro") desenha();
+}
+function desenhaCadastro(f) {
+  const b = estado.base, st = b.cad.status;
+  const aviso = $("cad-aviso");
+  if (!st) aviso.replaceChildren(el("div", { class: "aviso atencao" }, icone("error"), el("div", { class: "corpo" }, "Não foi possível consultar o cadastro nacional.")));
+  else if (st.completo) aviso.replaceChildren();
+  else {
+    aviso.replaceChildren(el("div", { class: "aviso atencao" }, icone("download"), el("div", { class: "corpo" },
+      el("div", {}, st.rodando ? "Baixando a cópia nacional do cadastro do SISAGUA" : "A cópia nacional do cadastro está incompleta",
+        `: ${fmt(st.populacao.registros)} registros de população${st.populacao.concluido ? " (completo)" : ""} e ${fmt(st.tratamento.registros)} de tratamento${st.tratamento.concluido ? " (completo)" : ""}. Os números abaixo podem estar incompletos.`),
+      st.rodando ? el("div", { class: "progresso" }) : el("div", {}, el("button", { class: "btn-tonal", onclick: iniciaCadastro }, icone("download"), "Continuar o download")))));
+    if (st.rodando && !timerCad) timerCad = setTimeout(recarregaCadastro, 20000);
+  }
+
+  const doSist = (r) => !f.sistema || r.forma === f.sistema;
+  const pop = b.cad.populacao.filter(doSist), trat = b.cad.tratamento.filter(doSist), cap = b.captacao.filter(doSist);
+  const anoDe = (ls) => { const a = [...new Set(ls.map((r) => r.ano).filter(Boolean))].filter((a) => !f.ano || a <= f.ano); return a.length ? Math.max(...a) : null; };
+  const aPop = anoDe(pop), aTrat = anoDe(trat), aCap = anoDe(cap);
+  const nota = (a) => a == null ? "sem cadastro" : f.ano && a !== f.ano ? `cadastro de ${a} (o mais recente até ${f.ano})` : `cadastro de ${a}`;
+  const porSist = new Map();
+  for (const r of pop.filter((r) => r.ano === aPop)) {
+    const k = r.forma || r.nome + r.tipo;
+    const o = porSist.get(k) || { ...r, pop: 0, pop_urbana: null, pop_rural: null, economias: null };
+    o.pop += r.pop || 0;
+    for (const c of ["pop_urbana", "pop_rural", "economias"]) if (r[c] != null) o[c] = (o[c] || 0) + r[c];
+    porSist.set(k, o);
+  }
+  const sist = [...porSist.values()];
+  const total = d3.sum(sist, (r) => r.pop || 0);
+  const anoAntPop = aPop ? d3.sum(pop.filter((r) => r.ano === aPop - 1), (r) => r.pop || 0) : 0;
+  const capAno = cap.filter((r) => r.ano === aCap), tratAno = trat.filter((r) => r.ano === aTrat);
+  kpi("kpi-sist", fmt(sist.length), [[...d3.rollup(sist, (v) => v.length, (r) => r.tipo)].map(([t, n]) => `${n} ${t}`).join(" · ") || nota(aPop)]);
+  kpi("kpi-pop", fmt(total), [anoAntPop ? delta(null, total, anoAntPop, { rotulo: `vs. ${aPop - 1}` }) : null, nota(aPop)]);
+  const anosPop = [...new Set(pop.map((r) => r.ano))].filter(Boolean).sort();
+  sparkline($("kpi-pop").querySelector(".spark"), anosPop.map((a) => d3.sum(pop.filter((r) => r.ano === a), (r) => r.pop || 0)), css("--c1"));
+  kpi("kpi-capt", capAno.length ? `${fmt(d3.sum(capAno, (r) => r.vazao || 0), 1)} L/s` : "—", [capAno.length ? `${capAno.length} ${capAno.length === 1 ? "ponto" : "pontos"} · ${nota(aCap)}` : "sem pontos cadastrados"]);
+  kpi("kpi-trat", tratAno.length ? `${fmt(d3.sum(tratAno, (r) => r.vazao_tratada || 0), 1)} L/s` : "—", [tratAno.length ? `${tratAno.length} ${tratAno.length === 1 ? "unidade" : "unidades"} · ${nota(aTrat)}` : st && !st.tratamento.concluido ? "aguardando o download nacional" : "sem dados de tratamento"]);
+
+  // população por ano
+  if (!anosPop.length) vazio($("g-pop"), st && !st.populacao.concluido ? "Aguardando o download nacional do cadastro." : "Sem população informada no cadastro.");
+  else combo($("g-pop"), anosPop.map((a) => { const partes = {}; for (const r of pop) if (r.ano === a) partes[r.tipo] = (partes[r.tipo] || 0) + (r.pop || 0); return { chave: a, rotulo: String(a), partes, total: d3.sum(Object.values(partes)) }; }),
+    [["SAA", css("--c1")], ["SAC", css("--c3")], ["SAI", css("--c-neutral")]], { destaque: f.ano ? aPop : null, aria: "Colunas com a população abastecida por ano e tipo",
+      dicaFn: (d) => [String(d.chave), [`${fmt(d.total)} pessoas`, ...Object.entries(d.partes).map(([t, n]) => [t === "SAA" ? css("--c1") : t === "SAC" ? css("--c3") : css("--c-neutral"), `${t}: ${fmt(n)}`])]] });
+  // divisão
+  const div = sist.sort((a, b) => (b.pop || 0) - (a.pop || 0));
+  const cores = [css("--c1"), css("--c2"), css("--c3"), css("--c4"), css("--c-ok")];
+  const partes = div.slice(0, 5).map((r, i) => ({ nome: nomeSistema(r.forma) || r.nome, valor: r.pop || 0, cor: cores[i] }));
+  if (div.length > 5) partes.push({ nome: "Outros", valor: d3.sum(div.slice(5), (r) => r.pop || 0), cor: css("--c-neutral") });
+  $("s-pop-div").textContent = total ? `Maiores sistemas · ${nota(aPop)}` : "";
+  if (!total) vazio($("g-pop-div"), "Sem população no cadastro.");
+  else { rosca($("g-pop-div"), partes, { aria: "Rosca com a divisão da população por sistema", centro: [fmt(total), "pessoas"] });
+    $("g-pop-div").append(el("ul", { class: "legenda", style: "margin-top:8px" }, partes.map((p) => el("li", {}, el("i", { style: `background:${p.cor}` }), `${p.nome} · ${fmtPct(p.valor / total * 100, 0)}`)))); }
+
+  $("s-sist").textContent = sist.length ? `${nota(aPop)[0].toUpperCase() + nota(aPop).slice(1)}.` : "Nenhum sistema com população informada.";
+  const sn = (v) => v === "S" ? "Sim" : v === "N" ? "Não" : "";
+  tabela("tab-sist", { nomeArquivo: `sistemas-${b.ibge}`, linhas: div, porPagina: 25, colunas: [
+    { k: "nome", t: "Sistema", texto: (r) => nomeSistema(r.forma) || r.nome }, { k: "forma", t: "Código" }, { k: "tipo", t: "Tipo" }, { k: "instituicao", t: "Instituição" },
+    { k: "pop", t: "População", num: true, texto: (r) => fmt(r.pop), csv: (r) => r.pop }, { k: "pop_urbana", t: "Urbana", num: true, texto: (r) => r.pop_urbana == null ? "" : fmt(r.pop_urbana), csv: (r) => r.pop_urbana },
+    { k: "pop_rural", t: "Rural", num: true, texto: (r) => r.pop_rural == null ? "" : fmt(r.pop_rural), csv: (r) => r.pop_rural }, { k: "economias", t: "Domicílios", num: true, texto: (r) => r.economias == null ? "" : fmt(r.economias), csv: (r) => r.economias },
+    { k: "capt", t: "Captação", texto: (r) => [r.capt_superficial === "S" && "superficial", r.capt_subterranea === "S" && "subterrânea"].filter(Boolean).join(" e ") },
+    { k: "filtracao", t: "Filtração", texto: (r) => sn(r.filtracao) }, { k: "desinfeccao", t: "Desinfecção", texto: (r) => sn(r.desinfeccao) } ] });
+  $("s-trat").textContent = tratAno.length ? `Unidades de tratamento · ${nota(aTrat)}.` : st && !st.tratamento.concluido ? "O tratamento aparece quando o download nacional terminar." : "Nenhuma informação de tratamento.";
+  tabela("tab-trat", { nomeArquivo: `tratamento-${b.ibge}`, linhas: tratAno.sort((a, b) => (b.vazao_tratada || 0) - (a.vazao_tratada || 0)), porPagina: 25, colunas: [
+    { k: "nome", t: "Sistema", texto: (r) => nomeSistema(r.forma) || r.nome }, { k: "eta", t: "Unidade (ETA/UTA)" }, { k: "filtracao", t: "Filtração" },
+    { k: "filtros", t: "Filtros", num: true, texto: (r) => r.filtros == null ? "" : fmt(r.filtros) }, { k: "vazao_tratada", t: "Vazão tratada (L/s)", num: true, texto: (r) => r.vazao_tratada == null ? "" : fmt(r.vazao_tratada, 2), csv: (r) => r.vazao_tratada },
+    { k: "funcionamento", t: "Funcionamento" }, { k: "etapas", t: "Etapas", quebra: true, texto: (r) => [r.etapas, r.outra_etapa].filter(Boolean).join(", ") }, { k: "desinfetante", t: "Desinfetante" } ] });
+  $("s-cap").textContent = capAno.length ? `${nota(aCap)[0].toUpperCase() + nota(aCap).slice(1)}.` : "Nenhum ponto de captação cadastrado.";
+  tabela("tab-cap", { nomeArquivo: `captacao-${b.ibge}`, linhas: capAno, porPagina: 25, colunas: [
+    { k: "forma", t: "Sistema", texto: (r) => nomeSistema(r.forma) }, { k: "cod", t: "Código", texto: (r) => r.forma }, { k: "manancial", t: "Manancial / poço" }, { k: "tipo", t: "Captação" },
+    { k: "categoria", t: "Categoria" }, { k: "vazao", t: "Vazão (L/s)", num: true, texto: (r) => r.vazao == null ? "" : fmt(r.vazao, 2), csv: (r) => r.vazao },
+    { k: "outorga", t: "Outorga", texto: (r) => sn(r.outorga) } ] });
+}
+
+// ======================================================================
+// Início
+// ======================================================================
+aplicaTema(guarda.ler("tema", matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro"));
+const h0 = leHash(); if (h0.aba) trocaAba(h0.aba, false);
+let esperaRes; window.addEventListener("resize", () => { clearTimeout(esperaRes); esperaRes = setTimeout(() => estado.base && desenha(), 150); });
+window.addEventListener("hashchange", () => {
+  const h = leHash();
+  if (h.m && h.m !== estado.municipio?.i) { const m = MUNICIPIOS.find((x) => x.i === h.m); if (m) abreMunicipio(m, h); }
+});
+</script>
+</body>
+</html>

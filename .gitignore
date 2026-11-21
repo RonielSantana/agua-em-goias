@@ -1,0 +1,3 @@
+# Os dados por município são gerados a cada execução do GitHub Actions e publicados direto no Pages.
+site/dados/
+node_modules/
