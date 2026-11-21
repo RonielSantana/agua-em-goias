@@ -2,26 +2,44 @@
 // no formato que o painel (site/index.html) lê.
 const API = "https://apidadosabertos.saude.gov.br/sisagua";
 export const CONJUNTOS = ["vigilancia-parametros-basicos", "controle-mensal-parametros-basicos", "pontos-de-captacao", "controle-semestral"];
-const PARALELAS = 4;
+const PARALELAS = Number(process.env.PARALELAS || 2); // páginas ao mesmo tempo por conjunto
+const TEMPO_PEDIDO = Number(process.env.TEMPO_PEDIDO || 60) * 1000; // limite de cada pedido à API
 const espera = (ms) => new Promise((ok) => setTimeout(ok, ms));
 export const limpa = (s) => (s ?? "").toString().replace(/\s+/g, " ").trim();
+export const registro = { pedidos: 0, lentos: 0, erros: 0 };
 
-// Uma página da API. Se a página der erro repetido (costuma ser um registro com problema),
-// baixa em pedaços menores e pula só o que continuar falhando.
-async function pagina(url, falhas, limite = 1000, n = 0) {
+// Prazo de um município: passou dele, os pedidos que faltam desistem logo (o município é pulado).
+export class Prazo {
+  constructor(ms) { this.fim = Date.now() + ms; }
+  get esgotado() { return Date.now() > this.fim; }
+}
+
+// Uma página da API, com algumas novas tentativas. Só um erro HTTP 500 (registro com problema
+// na página) leva a baixar a página em pedaços menores; demora ou queda não multiplicam pedidos.
+async function pagina(url, falhas, prazo, limite = 1000, n = 0) {
   const u = `${url}&limit=${limite}&offset=${n}`;
-  for (let t = 1; t <= 4; t++) {
+  let erro500 = false;
+  for (let t = 1; t <= 3 && !prazo.esgotado; t++) {
+    const inicio = Date.now();
+    registro.pedidos++;
     try {
-      const r = await fetch(u, { signal: AbortSignal.timeout(120000) });
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return Object.values(await r.json()).find(Array.isArray) || [];
-    } catch { await espera(2000 * t); }
+      const r = await fetch(u, { signal: AbortSignal.timeout(TEMPO_PEDIDO) });
+      if (!r.ok) { erro500 = r.status === 500; throw new Error("HTTP " + r.status); }
+      const lista = Object.values(await r.json()).find(Array.isArray) || [];
+      if (Date.now() - inicio > 20000) registro.lentos++;
+      return lista;
+    } catch (e) {
+      registro.erros++;
+      if (t === 3 || erro500) console.log(`  pedido falhou (${e.name === "TimeoutError" ? "demorou mais de " + TEMPO_PEDIDO / 1000 + " s" : e.message}): ${u.replace(API, "")}`);
+      if (erro500) break;
+      await espera(3000 * t);
+    }
   }
-  if (limite > 10) {
+  if (erro500 && limite > 10 && !prazo.esgotado) {
     const menor = limite / 10, partes = [];
     let incompleto = false;
     for (let k = n * 10; k < n * 10 + 10; k++) {
-      const p = await pagina(url, falhas, menor, k);
+      const p = await pagina(url, falhas, prazo, menor, k);
       partes.push(...p);
       if (p.falhou) incompleto = true; else if (p.length < menor) return partes;
     }
@@ -32,13 +50,18 @@ async function pagina(url, falhas, limite = 1000, n = 0) {
 }
 
 // Todas as páginas de um conjunto filtrado (ex.: "?codigo_ibge=520030").
-export async function baixarTudo(conjunto, filtro, falhas = []) {
+// Lança erro se o prazo do município acabar no meio (para não publicar dados pela metade).
+export async function baixarTudo(conjunto, filtro, falhas = [], prazo = new Prazo(15 * 60 * 1000)) {
   const url = `${API}/${conjunto}${filtro}`;
   const paginas = [];
-  let fim = null;
+  let fim = null, seguidas = 0;
   for (let n = 0; fim == null; n += PARALELAS) {
+    if (prazo.esgotado) throw new Error(`tempo esgotado em ${conjunto}`);
+    if (n > 2000) throw new Error(`paginação sem fim em ${conjunto}`);
     const lote = Array.from({ length: PARALELAS }, (_, i) => n + i);
-    const res = await Promise.all(lote.map((k) => pagina(url, falhas, 1000, k)));
+    const res = await Promise.all(lote.map((k) => pagina(url, falhas, prazo, 1000, k)));
+    seguidas = res.every((r) => r.falhou) ? seguidas + 1 : 0;
+    if (seguidas >= 3) throw new Error(`API sem resposta em ${conjunto}`);
     res.forEach((linhas, i) => {
       if (fim != null && lote[i] > fim) return;
       paginas[lote[i]] = linhas;

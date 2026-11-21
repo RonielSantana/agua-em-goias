@@ -12,6 +12,10 @@ on:
         description: "Refazer também o cadastro (população e tratamento), que leva cerca de 1 hora"
         type: boolean
         default: false
+      municipios:
+        description: "Só estes municípios (códigos IBGE de 6 dígitos separados por espaço); vazio = todos"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -53,9 +57,13 @@ jobs:
           git diff --cached --quiet || (git commit -m "Atualiza o cadastro de Goiás ($(date -u +%Y-%m-%d))" && git push)
 
       - name: Dados de todos os municípios de Goiás
-        run: node scripts/atualizar.mjs
+        run: node scripts/atualizar.mjs $MUNICIPIOS
         env:
-          SIMULTANEOS: "4"
+          MUNICIPIOS: ${{ inputs.municipios }}
+          SIMULTANEOS: "2"
+          PRAZO_MUNICIPIO: "12"
+          TEMPO_TOTAL: "280"
+          SITE_ANTERIOR: https://ronielsantana.github.io/agua-em-goias/
 
       - uses: actions/configure-pages@v5
 
