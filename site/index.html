@@ -260,13 +260,13 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
     <!-- ===== Visão geral ===== -->
     <section data-painel="geral" class="grade">
       <div class="kpi s3" id="kpi-analises"><h3><span class="ms">science</span>Análises da vigilância</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
-      <div class="kpi s3" id="kpi-conf"><h3><span class="ms">check_circle</span>Dentro do padrão</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
+      <div class="kpi s3" id="kpi-conf"><h3><span class="ms">check_circle</span>Dentro da referência</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
       <div class="kpi s3" id="kpi-ecoli"><h3><span class="ms">error</span>Presença de <i>E. coli</i></h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
       <div class="kpi s3" id="kpi-cloro"><h3><span class="ms">water_drop</span>Cloro residual &lt; 0,2 mg/L</h3><div class="valor">—</div><div class="linha2"></div><svg class="spark" aria-hidden="true"></svg></div>
 
       <div class="cartao s8">
         <div class="cartao-cab"><div><h2 id="t-tendencia">Conformidade ao longo do tempo</h2><p class="sub" id="s-tendencia"></p></div></div>
-        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Dentro</li><li><i style="background:var(--c-bad)"></i>Fora</li><li><i style="background:var(--c-neutral)"></i>Sem referência</li><li><i class="linha" style="background:var(--c1)"></i>% dentro do padrão</li></ul>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Dentro</li><li><i style="background:var(--c-bad)"></i>Fora</li><li><i style="background:var(--c-neutral)"></i>Sem referência</li><li><i class="linha" style="background:var(--c1)"></i>% dentro da referência</li></ul>
         <div class="grafico" id="g-tendencia"></div>
       </div>
       <div class="cartao s4">
@@ -279,12 +279,12 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
         <div class="grafico" id="g-parametro"></div>
       </div>
       <div class="cartao s6">
-        <div class="cartao-cab"><div><h2>Áreas com mais análises fora do padrão</h2><p class="sub">Bairro ou área informada na coleta</p></div></div>
+        <div class="cartao-cab"><div><h2>Áreas com mais análises fora da referência</h2><p class="sub">Bairro ou área informada na coleta</p></div></div>
         <div class="grafico" id="g-bairros"></div>
       </div>
 
       <div class="cartao s12">
-        <div class="cartao-cab"><div><h2 id="t-calor">Mapa de calor: % fora do padrão</h2><p class="sub" id="s-calor"></p></div></div>
+        <div class="cartao-cab"><div><h2 id="t-calor">Mapa de calor: % fora da referência</h2><p class="sub" id="s-calor"></p></div></div>
         <div class="grafico" id="g-calor"></div>
       </div>
     </section>
@@ -322,20 +322,20 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
     <section data-painel="semestral" class="grade" hidden>
       <div class="kpi s3" id="kpi-s-analises"><h3><span class="ms">table_chart</span>Análises semestrais</h3><div class="valor">—</div><div class="linha2"></div></div>
       <div class="kpi s3" id="kpi-s-acima"><h3><span class="ms">error</span>Acima do VMP na água tratada</h3><div class="valor">—</div><div class="linha2"></div></div>
-      <div class="kpi s3" id="kpi-s-nd"><h3><span class="ms">check_circle</span>Não detectado</h3><div class="valor">—</div><div class="linha2"></div></div>
+      <div class="kpi s3" id="kpi-s-nd"><h3><span class="ms">check_circle</span>Registrados como −1</h3><div class="valor">—</div><div class="linha2"></div></div>
       <div class="kpi s3" id="kpi-s-maior"><h3><span class="ms">bar_chart</span>Mais perto do limite</h3><div class="valor">—</div><div class="linha2"></div></div>
       <div class="cartao s8">
         <div class="cartao-cab"><div><h2>Água tratada: parâmetros mais próximos do limite</h2><p class="sub">Maior resultado de cada parâmetro na saída do tratamento e na distribuição, como % do VMP (valor máximo permitido). A linha marca 100%. A captação (água bruta) fica de fora, porque o VMP vale para a água tratada.</p></div></div>
         <div class="grafico" id="g-s-limite"></div>
       </div>
       <div class="cartao s4">
-        <div class="cartao-cab"><div><h2>Por grupo de parâmetros</h2><p class="sub">Resultados abaixo do VMP, não detectados e acima do VMP</p></div></div>
-        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Não detectado</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
+        <div class="cartao-cab"><div><h2>Por grupo de parâmetros</h2><p class="sub">Resultados abaixo do VMP, registrados como −1 e acima do VMP</p></div></div>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Registrado como −1 (provável abaixo do limite do método)</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
         <div class="grafico" id="g-s-grupo"></div>
       </div>
       <div class="cartao s12">
         <div class="cartao-cab"><div><h2>Análises por semestre</h2><p class="sub" id="s-s-tempo"></p></div></div>
-        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Não detectado</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
+        <ul class="legenda"><li><i style="background:var(--c-ok)"></i>Abaixo do VMP</li><li><i style="background:var(--c-neutral)"></i>Registrado como −1 (provável abaixo do limite do método)</li><li><i style="background:var(--c3)"></i>Acima do VMP na água bruta</li><li><i style="background:var(--c-bad)"></i>Acima do VMP na água tratada</li></ul>
         <div class="grafico" id="g-s-tempo"></div>
       </div>
       <div class="cartao s12">
@@ -370,9 +370,10 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
       <ul>
         <li><i>Escherichia coli</i> e coliformes totais: ausência em 100 mL. Para coliformes totais a Portaria avalia o conjunto de amostras do mês; uma presença isolada é alerta, não necessariamente descumprimento.</li>
         <li>Turbidez até 5,0 uT · cloro residual livre de 0,2 a 5,0 mg/L · pH de 6,0 a 9,0 (recomendado) · fluoreto até 1,5 mg/L.</li>
+        <li>"Dentro/fora da referência" compara cada amostra com o valor de referência da Portaria GM/MS nº 888/2021. Não é a avaliação legal de conformidade, que em alguns casos considera o conjunto de amostras do mês (por exemplo, coliformes totais no sistema de distribuição). Os números e resultados vêm do SISAGUA sem alteração; a classificação é feita pelo painel.</li>
         <li>Vigilância = amostras coletadas pela Secretaria de Saúde. Controle = análises feitas e informadas pelo prestador do serviço.</li>
         <li>O mesmo sistema pode mudar de nome ao longo dos anos; aqui ele é agrupado pelo código do SISAGUA e aparece com o nome mais recente.</li>
-        <li>Controle semestral: "não detectado" = resultado abaixo do limite de detecção do método (o SISAGUA grava -1). O VMP vale para a água tratada; na captação ele serve só de comparação. Resultados muito acima do VMP podem ser erro de unidade no envio ao SISAGUA e merecem conferência com o laudo.</li>
+        <li>Controle semestral: parte dos resultados vem gravada no SISAGUA como <b>−1</b>, um código e não uma concentração. O dicionário oficial do Ministério não define esse código; como 97% dessas linhas trazem o limite de detecção ou de quantificação do método, ele indica, muito provavelmente, resultado abaixo desse limite. O painel mostra esses casos como "registrado como −1" e não os conta como acima ou abaixo do VMP. O VMP vale para a água tratada; na captação (água bruta) serve só de comparação. Resultados muito acima do VMP podem ser erro de unidade no envio ao SISAGUA e merecem conferência com o laudo.</li>
         <li>O ano corrente costuma estar incompleto, porque prestadores e secretarias informam com atraso.</li>
         <li>População e tratamento vêm de uma cópia nacional do cadastro (a API não filtra esses dados por município), guardada no PC sem os dados pessoais dos responsáveis técnicos.</li>
         <li>Fonte: apidadosabertos.saude.gov.br (SISAGUA) e IBGE (lista de municípios).</li>
@@ -1002,10 +1003,10 @@ function desenhaGeral(f) {
   if (!serie.itens.some((d) => d.total)) vazio($("g-tendencia"), "Sem análises da vigilância no filtro escolhido.");
   else combo($("g-tendencia"), serie.itens, [["dentro", css("--c-ok")], ["fora", css("--c-bad")], ["sem", css("--c-neutral")]], {
     linha: { valor: (d) => d.conf, cor: css("--c1") }, destaque: !serie.porAno && f.mes ? f.mes : null,
-    aria: "Colunas com análises da vigilância por período e linha com a porcentagem dentro do padrão",
+    aria: "Colunas com análises da vigilância por período e linha com a porcentagem dentro da referência",
     dicaFn: (d) => [serie.porAno ? String(d.chave) : `${MESES[d.chave - 1]} de ${f.ano}`, d.total ? [
       [css("--c-ok"), `${fmt(d.partes.dentro || 0)} dentro`], [css("--c-bad"), `${fmt(d.partes.fora || 0)} fora`], [css("--c-neutral"), `${fmt(d.partes.sem || 0)} sem referência`],
-      [css("--c1"), `${fmtPct(d.conf)} dentro do padrão`]] : ["Sem coletas registradas"]] });
+      [css("--c1"), `${fmtPct(d.conf)} dentro da referência`]] : ["Sem coletas registradas"]] });
 
   // por parâmetro (ignora o filtro de parâmetro para comparar todos)
   const vigP = filtraVig(f, { usaParam: false });
@@ -1021,22 +1022,22 @@ function desenhaGeral(f) {
   const porBairro = d3.rollups(vig.filter((r) => r.sit !== "sem"), (v) => ({ fora: v.filter((r) => r.sit === "fora").length, dentro: v.filter((r) => r.sit === "dentro").length }), (r) => r.bairro || "Não informado")
     .map(([nome, p]) => ({ nome, partes: p, total: p.fora + p.dentro })).filter((d) => d.partes.fora > 0).sort((a, b) => b.partes.fora - a.partes.fora).slice(0, 10)
     .map((d) => ({ ...d, partes: { fora: d.partes.fora }, total: d.partes.fora, totalAnalises: d.total }));
-  if (!porBairro.length) vazio($("g-bairros"), "Nenhuma análise fora do padrão no filtro escolhido.", "check_circle");
+  if (!porBairro.length) vazio($("g-bairros"), "Nenhuma análise fora da referência no filtro escolhido.", "check_circle");
   else barrasH($("g-bairros"), porBairro, [["fora", css("--c-bad")]], {
-    aria: "Barras horizontais com as áreas que tiveram mais análises fora do padrão",
+    aria: "Barras horizontais com as áreas que tiveram mais análises fora da referência",
     rotulo: (d) => [`${fmt(d.partes.fora)} (${fmtPct(d.partes.fora / d.totalAnalises * 100, 0)})`, "rot-ruim"],
-    dicaFn: (d) => [d.nome, [`${fmt(d.totalAnalises)} análises com referência`, [css("--c-bad"), `${fmt(d.partes.fora)} fora do padrão`]]] });
+    dicaFn: (d) => [d.nome, [`${fmt(d.totalAnalises)} análises com referência`, [css("--c-bad"), `${fmt(d.partes.fora)} fora da referência`]]] });
 
   // mapa de calor
   const vigCalor = filtraVig(f, { usaParam: false, usaMes: !!f.ano ? false : true });
   const colsCalor = serie.porAno ? serie.itens.map((d) => d.chave) : d3.range(1, 13);
   const linhasCalor = [...new Set(vigCalor.filter((r) => r.tipo).map((r) => r.parametro))].sort();
-  $("t-calor").textContent = serie.porAno ? "Mapa de calor: % fora do padrão por parâmetro e ano" : `Mapa de calor: % fora do padrão por parâmetro e mês de ${f.ano}`;
+  $("t-calor").textContent = serie.porAno ? "Mapa de calor: % fora da referência por parâmetro e ano" : `Mapa de calor: % fora da referência por parâmetro e mês de ${f.ano}`;
   $("s-calor").textContent = "Quanto mais vermelho, maior a parcela de análises fora da referência. Contorno tracejado = sem análises.";
   const idx = d3.rollup(vigCalor.filter((r) => r.sit !== "sem"), (v) => ({ n: v.length, fora: v.filter((r) => r.sit === "fora").length }), (r) => r.parametro, (r) => serie.porAno ? r.ano : r.mes);
   if (!linhasCalor.length) vazio($("g-calor"), "Sem análises com referência no filtro escolhido.");
   else mapaCalor($("g-calor"), linhasCalor, colsCalor, (l, c) => { const v = idx.get(l)?.get(c); return v ? { ...v, pct: v.fora / v.n * 100 } : null; }, {
-    aria: "Mapa de calor com a porcentagem de análises fora do padrão por parâmetro e período",
+    aria: "Mapa de calor com a porcentagem de análises fora da referência por parâmetro e período",
     rotuloCol: (c, longo) => serie.porAno ? String(c) : longo ? `${MESES[c - 1]} de ${f.ano}` : MES_C[c - 1] });
 
   // destaques
@@ -1044,18 +1045,18 @@ function desenhaGeral(f) {
   const piorP = porParam.filter((p) => p.partes.fora).sort((a, b) => b.partes.fora / (b.partes.dentro + b.partes.fora) - a.partes.fora / (a.partes.dentro + a.partes.fora))[0];
   if (!R.n) ins.push(["info", `Não há análises da vigilância em ${periodoTexto(f)}${f.sistema ? " para este sistema" : ""}.`]);
   else {
-    ins.push(["check_circle", [el("b", {}, fmtPct(R.conf)), ` das ${fmt(R.comRef)} análises com referência ficaram dentro do padrão em ${periodoTexto(f)}.`]]);
+    ins.push(["check_circle", [el("b", {}, fmtPct(R.conf)), ` das ${fmt(R.comRef)} análises com referência ficaram dentro da referência em ${periodoTexto(f)}.`]]);
     if (piorP) ins.push(["error", ["O parâmetro com mais falhas proporcionais é ", el("b", {}, piorP.nome), `: ${fmtPct(piorP.partes.fora / (piorP.partes.dentro + piorP.partes.fora) * 100)} das análises fora da referência.`]]);
     if (R.ecoli) ins.push(["error", [el("b", {}, `${fmt(R.ecoli)} ${R.ecoli === 1 ? "análise" : "análises"} com E. coli`), " — indica contaminação fecal e pede investigação imediata."]]);
     else if (R.ecoliN) ins.push(["check_circle", [`Nenhuma presença de E. coli em ${fmt(R.ecoliN)} análises.`]]);
-    if (porBairro[0]) ins.push(["location_on", ["A área com mais análises fora do padrão é ", el("b", {}, porBairro[0].nome), ` (${fmt(porBairro[0].partes.fora)}).`]]);
+    if (porBairro[0]) ins.push(["location_on", ["A área com mais análises fora da referência é ", el("b", {}, porBairro[0].nome), ` (${fmt(porBairro[0].partes.fora)}).`]]);
     if (!serie.porAno) {
       const semColeta = serie.itens.filter((d) => !d.total).map((d) => MES_C[d.chave - 1]);
       const ultimoMes = d3.max(estado.base.vigilancia.filter((r) => r.ano === f.ano), (r) => r.mes) || 0;
       const falt = semColeta.filter((m) => MES_C.indexOf(m) + 1 <= ultimoMes);
       if (falt.length) ins.push(["info", [`Meses de ${f.ano} sem coleta registrada: `, el("b", {}, falt.join(", ")), "."]]);
       const pior = serie.itens.filter((d) => d.conf != null && d.total >= 5).sort((a, b) => a.conf - b.conf)[0];
-      if (pior && pior.conf < 100) ins.push(["bar_chart", ["Pior mês: ", el("b", {}, MESES[pior.chave - 1]), ` (${fmtPct(pior.conf)} dentro do padrão).`]]);
+      if (pior && pior.conf < 100) ins.push(["bar_chart", ["Pior mês: ", el("b", {}, MESES[pior.chave - 1]), ` (${fmtPct(pior.conf)} dentro da referência).`]]);
     } else if (temAnt) { /* sem ano escolhido não há comparação */ }
     if (temAnt && R.conf != null && anterior.conf != null) {
       const d = R.conf - anterior.conf;
@@ -1078,7 +1079,7 @@ function desenhaVigilancia(f) {
 
   tabela("tab-vig", {
     nomeArquivo: `vigilancia-${estado.base.ibge}`,
-    alternador: { rotulo: "Só fora do padrão", filtro: (r) => r.sit === "fora", padrao: false },
+    alternador: { rotulo: "Só fora da referência", filtro: (r) => r.sit === "fora", padrao: false },
     linhas: [...vig].sort((a, b) => (b.data || "").localeCompare(a.data || "")),
     colunas: [
       { k: "data", t: "Coleta", texto: (r) => dataBR(r.data), ordem: (r) => r.data, csv: (r) => r.data },
@@ -1142,7 +1143,7 @@ function desenhaControle(f) {
 }
 
 // ---------------- Controle semestral ----------------
-// resultado -1 = não detectado; acima do VMP quando o resultado passa do valor máximo permitido da linha.
+// resultado -1 = código do SISAGUA (não é concentração; o dicionário oficial não o define); acima do VMP quando o resultado passa do valor máximo permitido da linha.
 function situacaoSem(r) {
   if (r.resultado == null) return "sem";
   if (r.resultado < 0) return "nd";
@@ -1151,7 +1152,7 @@ function situacaoSem(r) {
   if (r.resultado > r.vmp) return /CAPTA/.test(r.ponto) ? "bruta" : "acima";
   return "abaixo";
 }
-const NOME_SIT_SEM = { abaixo: "Abaixo do VMP", nd: "Não detectado", acima: "Acima do VMP", bruta: "Acima do VMP na água bruta", sem: "Sem VMP" };
+const NOME_SIT_SEM = { abaixo: "Abaixo do VMP", nd: "Registrado como −1", acima: "Acima do VMP", bruta: "Acima do VMP na água bruta", sem: "Sem VMP" };
 function desenhaSemestral(f) {
   const todos = (estado.base.semestral || []).filter((r) => !f.sistema || r.forma === f.sistema);
   todos.forEach((r) => { r.sit ??= situacaoSem(r); r.pct ??= ["abaixo", "acima", "bruta"].includes(r.sit) ? r.resultado / r.vmp * 100 : null; });
@@ -1162,7 +1163,7 @@ function desenhaSemestral(f) {
   const maior = tratada.filter((r) => r.pct != null).sort((a, b) => b.pct - a.pct)[0];
   kpi("kpi-s-analises", fmt(sem.length), [`${fmt(params.size)} parâmetros · ${f.ano ? f.ano : "todos os anos"}`]);
   kpi("kpi-s-acima", fmt(acima.length), [acima.length ? `${fmt(new Set(acima.map((r) => r.parametro)).size)} parâmetro(s) na água tratada` : "nenhum na água tratada", bruta.length ? `+ ${fmt(bruta.length)} na água bruta (captação)` : null], sem.length ? (acima.length ? "ruim" : "bom") : null);
-  kpi("kpi-s-nd", sem.length ? fmtPct(nd.length / sem.length * 100, 0) : "—", [`${fmt(nd.length)} resultados abaixo do limite de detecção`]);
+  kpi("kpi-s-nd", sem.length ? fmtPct(nd.length / sem.length * 100, 0) : "—", [`${fmt(nd.length)} resultados sem valor numérico (código −1)`]);
   kpi("kpi-s-maior", maior ? fmtPct(maior.pct, 0) : "—", [maior ? `${maior.parametro} · ${dataBR(maior.data)} · água tratada` : "sem resultados quantificados"], maior ? (maior.pct > 100 ? "ruim" : maior.pct > 50 ? "alerta" : "bom") : null);
 
   // mais perto do limite: maior % do VMP por parâmetro
@@ -1197,9 +1198,9 @@ function desenhaSemestral(f) {
     .map(([nome, p]) => ({ nome, partes: p, total: p.abaixo + p.nd + p.bruta + p.acima })).filter((d) => d.total).sort((a, b) => b.total - a.total);
   if (!porGrupo.length) vazio($("g-s-grupo"), "Sem análises no filtro escolhido.");
   else barrasH($("g-s-grupo"), porGrupo, [["abaixo", css("--c-ok")], ["nd", css("--c-neutral")], ["bruta", css("--c3")], ["acima", css("--c-bad")]], {
-    aria: "Barras por grupo de parâmetros com resultados abaixo do VMP, não detectados e acima do VMP",
+    aria: "Barras por grupo de parâmetros com resultados abaixo do VMP, registrados como −1 e acima do VMP",
     rotulo: (d) => d.partes.acima ? [`${fmt(d.partes.acima)} acima`, "rot-ruim"] : [fmt(d.total), ""],
-    dicaFn: (d) => [d.nome, [`${fmt(d.total)} análises`, [css("--c-ok"), `${fmt(d.partes.abaixo)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd)} não detectados`], [css("--c3"), `${fmt(d.partes.bruta)} acima do VMP na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima)} acima do VMP na água tratada`]]] });
+    dicaFn: (d) => [d.nome, [`${fmt(d.total)} análises`, [css("--c-ok"), `${fmt(d.partes.abaixo)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd)} registrados como −1`], [css("--c3"), `${fmt(d.partes.bruta)} acima do VMP na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima)} acima do VMP na água tratada`]]] });
 
   // por semestre
   const chaves = [...new Set(todos.map((r) => r.ano * 10 + r.semestre))].filter(Boolean).sort();
@@ -1212,7 +1213,7 @@ function desenhaSemestral(f) {
   else {
     combo($("g-s-tempo"), itens, [["abaixo", css("--c-ok")], ["nd", css("--c-neutral")], ["bruta", css("--c3")], ["acima", css("--c-bad")]], {
       rotulo: (d) => d.partes.acima ? fmt(d.partes.acima) : "", aria: "Colunas com as análises semestrais por semestre",
-      dicaFn: (d) => [`${d.rotulo.replace("/", " semestre de 20")}`, d.total ? [[css("--c-ok"), `${fmt(d.partes.abaixo || 0)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd || 0)} não detectados`], [css("--c3"), `${fmt(d.partes.bruta || 0)} acima na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima || 0)} acima na água tratada`]] : ["Sem relatório"]] });  }
+      dicaFn: (d) => [`${d.rotulo.replace("/", " semestre de 20")}`, d.total ? [[css("--c-ok"), `${fmt(d.partes.abaixo || 0)} abaixo do VMP`], [css("--c-neutral"), `${fmt(d.partes.nd || 0)} registrados como −1`], [css("--c3"), `${fmt(d.partes.bruta || 0)} acima na água bruta`], [css("--c-bad"), `${fmt(d.partes.acima || 0)} acima na água tratada`]] : ["Sem relatório"]] });  }
 
   tabela("tab-sem", {
     nomeArquivo: `semestral-${estado.base.ibge}`,
@@ -1223,7 +1224,7 @@ function desenhaSemestral(f) {
       { k: "semestre", t: "Semestre", texto: (r) => `${r.semestre}º/${r.ano}`, ordem: (r) => r.ano * 10 + r.semestre },
       { k: "grupo", t: "Grupo" },
       { k: "parametro", t: "Parâmetro" },
-      { k: "resultado", t: "Resultado", num: true, texto: (r) => r.resultado == null ? "" : r.resultado < 0 ? "não detectado" : fmt(r.resultado, 6), csv: (r) => r.resultado, ordem: (r) => r.resultado },
+      { k: "resultado", t: "Resultado", num: true, texto: (r) => r.resultado == null ? "" : r.resultado < 0 ? "−1 (código)" : fmt(r.resultado, 6), csv: (r) => r.resultado, ordem: (r) => r.resultado },
       { k: "unidade", t: "Unidade" },
       { k: "vmp", t: "VMP", num: true, texto: (r) => r.vmp == null ? "" : fmt(r.vmp, 6), csv: (r) => r.vmp, ordem: (r) => r.vmp },
       { k: "pct", t: "% do VMP", num: true, texto: (r) => r.pct == null ? "" : fmtPct(r.pct, r.pct < 10 ? 1 : 0), csv: (r) => r.pct == null ? "" : r.pct.toFixed(2), ordem: (r) => r.pct ?? -1 },

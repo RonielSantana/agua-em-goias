@@ -30,13 +30,14 @@ async function pagina(url, falhas, prazo, limite = 1000, n = 0) {
       return lista;
     } catch (e) {
       registro.erros++;
-      if (t === 3 || erro500) console.log(`  pedido falhou (${e.name === "TimeoutError" ? "demorou mais de " + TEMPO_PEDIDO / 1000 + " s" : e.message}): ${u.replace(API, "")}`);
+      if ((t === 3 || erro500) && limite >= 1000) console.log(`  pedido falhou (${e.name === "TimeoutError" ? "demorou mais de " + TEMPO_PEDIDO / 1000 + " s" : e.message}): ${u.replace(API, "")}`);
       if (erro500) break;
       await espera(3000 * t);
     }
   }
-  if (erro500 && limite > 10 && !prazo.esgotado) {
-    const menor = limite / 10, partes = [];
+  // desce de 1000 → 100 → 10 → 1 registro por pedido, para perder só o registro que a API não entrega
+  if (erro500 && limite > 1 && !prazo.esgotado) {
+    const menor = Math.max(1, limite / 10), partes = [];
     let incompleto = false;
     for (let k = n * 10; k < n * 10 + 10; k++) {
       const p = await pagina(url, falhas, prazo, menor, k);

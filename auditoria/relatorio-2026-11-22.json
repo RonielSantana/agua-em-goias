@@ -1,0 +1,717 @@
+{
+  "site": "https://ronielsantana.github.io/agua-em-goias/",
+  "publicadoEm": "2026-11-22T14:51:53.280Z",
+  "auditadoEm": "2026-11-22T16:07:00.287Z",
+  "municipios": [
+    {
+      "ibge": "520870",
+      "nome": "Goiânia",
+      "publicadoEm": "2026-11-22T14:26:35.303Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 2853,
+          "api": 2853,
+          "iguais": 2853,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 3482,
+          "api": 3482,
+          "iguais": 3482,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 235,
+          "api": 235,
+          "iguais": 235,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 18998,
+          "api": 18998,
+          "iguais": 18998,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    },
+    {
+      "ibge": "520110",
+      "nome": "Anápolis",
+      "publicadoEm": "2026-11-22T14:18:06.509Z",
+      "falhasNaPublicacao": 1,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 8473"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 814,
+          "api": 814,
+          "iguais": 814,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 8624,
+          "api": 8633,
+          "iguais": 8624,
+          "soNoSite": 0,
+          "soNaApi": 9,
+          "exSite": [],
+          "exApi": [
+            "2026-01-27|S520110000004|SISTEMA DE DISTRIBUIÇÃO|Ácidos Haloacéticos Total||0.08|mg/L",
+            "2026-01-27|S520110000004|SISTEMA DE DISTRIBUIÇÃO|Trihalometanos Total|-1|0.1|mg/L",
+            "2026-01-13|S520110000006|PONTO DE CAPTAÇÃO|2,4 D|-1|30|µg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 309,
+          "api": 309,
+          "iguais": 309,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 17872,
+          "api": 17872,
+          "iguais": 17872,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "520140",
+      "nome": "Aparecida de Goiânia",
+      "publicadoEm": "2026-11-22T14:18:42.030Z",
+      "falhasNaPublicacao": 5,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 2764",
+        "controle-semestral registro nº 3664",
+        "controle-semestral registro nº 3895",
+        "controle-semestral registro nº 3994",
+        "controle-semestral registro nº 4395"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 1240,
+          "api": 1240,
+          "iguais": 1240,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 6381,
+          "api": 6426,
+          "iguais": 6381,
+          "soNoSite": 0,
+          "soNaApi": 45,
+          "exSite": [],
+          "exApi": [
+            "2025-02-24|S520140000007|SAÍDA DO TRATAMENTO|Nitrato (como N)|0.1|10|mg/L",
+            "2025-02-24|S520140000007|SAÍDA DO TRATAMENTO|Nitrato (como N)|0.3|10|mg/L",
+            "2025-02-24|S520140000007|SAÍDA DO TRATAMENTO|Nitrito (como N)|0.01|1|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 1073,
+          "api": 1073,
+          "iguais": 1073,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 19108,
+          "api": 19108,
+          "iguais": 19108,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "521880",
+      "nome": "Rio Verde",
+      "publicadoEm": "2026-11-21T17:22:23.952Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 2165,
+          "api": 2165,
+          "iguais": 2165,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 25692,
+          "api": 25692,
+          "iguais": 25692,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 560,
+          "api": 560,
+          "iguais": 560,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 42808,
+          "api": 42808,
+          "iguais": 42808,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    },
+    {
+      "ibge": "521250",
+      "nome": "Luziânia",
+      "publicadoEm": "2026-11-22T14:32:59.130Z",
+      "falhasNaPublicacao": 2,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 10286",
+        "controle-semestral registro nº 10545"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 2022,
+          "api": 2022,
+          "iguais": 2022,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 11560,
+          "api": 11578,
+          "iguais": 11560,
+          "soNoSite": 0,
+          "soNaApi": 18,
+          "exSite": [],
+          "exApi": [
+            "2024-11-25|S521250000018|SISTEMA DE DISTRIBUIÇÃO|Ferro|0.38|0.3|mg/L",
+            "2024-11-25|S521250000018|SISTEMA DE DISTRIBUIÇÃO|Manganês|0.062|0.1|mg/L",
+            "2024-11-25|S521250000018|SISTEMA DE DISTRIBUIÇÃO|Sólidos Dissolvidos totais|53.18|500|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 792,
+          "api": 792,
+          "iguais": 792,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 46019,
+          "api": 46019,
+          "iguais": 46019,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "520030",
+      "nome": "Alexânia",
+      "publicadoEm": "2026-11-22T14:17:11.464Z",
+      "falhasNaPublicacao": 1,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 1910"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 1190,
+          "api": 1190,
+          "iguais": 1190,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 2449,
+          "api": 2458,
+          "iguais": 2449,
+          "soNoSite": 0,
+          "soNaApi": 9,
+          "exSite": [],
+          "exApi": [
+            "2024-05-23|S520030000001|SISTEMA DE DISTRIBUIÇÃO|Níquel|-1|0.07|mg/L",
+            "2024-02-21|S520030000001|SISTEMA DE DISTRIBUIÇÃO|Nitrato (como N)|0.8|10|mg/L",
+            "2024-02-21|S520030000001|SISTEMA DE DISTRIBUIÇÃO|Nitrito (como N)|-1|1|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 109,
+          "api": 109,
+          "iguais": 109,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 6913,
+          "api": 6913,
+          "iguais": 6913,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "521523",
+      "nome": "Novo Gama",
+      "publicadoEm": "2026-11-22T14:36:02.012Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 1666,
+          "api": 1666,
+          "iguais": 1666,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 1524,
+          "api": 1524,
+          "iguais": 1524,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 130,
+          "api": 130,
+          "iguais": 130,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 10769,
+          "api": 10769,
+          "iguais": 10769,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    },
+    {
+      "ibge": "520055",
+      "nome": "Alto Horizonte",
+      "publicadoEm": "2026-11-22T14:17:25.003Z",
+      "falhasNaPublicacao": 1,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 447"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 703,
+          "api": 703,
+          "iguais": 703,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 1573,
+          "api": 1582,
+          "iguais": 1573,
+          "soNoSite": 0,
+          "soNaApi": 9,
+          "exSite": [],
+          "exApi": [
+            "2024-12-09|C520055000002|PONTO DE CAPTAÇÃO|Cádmio|0.0001|0.003|mg/L",
+            "2024-12-09|C520055000002|SAÍDA DO TRATAMENTO|Sólidos Dissolvidos totais|489|500|mg/L",
+            "2024-12-09|C520055000002|SAÍDA DO TRATAMENTO|Sulfato|390|250|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 53,
+          "api": 53,
+          "iguais": 53,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 2103,
+          "api": 2103,
+          "iguais": 2103,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "520082",
+      "nome": "Amaralina",
+      "publicadoEm": "2026-11-22T14:17:32.948Z",
+      "falhasNaPublicacao": 1,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 365"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 190,
+          "api": 190,
+          "iguais": 190,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 423,
+          "api": 432,
+          "iguais": 423,
+          "soNoSite": 0,
+          "soNaApi": 9,
+          "exSite": [],
+          "exApi": [
+            "2026-05-18|S520082000001|SAÍDA DO TRATAMENTO|Mercúrio Total|-1|0.001|mg/L",
+            "2026-05-18|S520082000001|SAÍDA DO TRATAMENTO|Níquel|-1|0.07|mg/L",
+            "2026-05-18|S520082000001|SAÍDA DO TRATAMENTO|Selênio|-1|0.04|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 58,
+          "api": 58,
+          "iguais": 58,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 1546,
+          "api": 1546,
+          "iguais": 1546,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "520330",
+      "nome": "Bela Vista de Goiás",
+      "publicadoEm": "2026-11-22T14:19:12.731Z",
+      "falhasNaPublicacao": 1,
+      "ilegiveisNaApi": [
+        "controle-semestral registro nº 6907"
+      ],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 1250,
+          "api": 1250,
+          "iguais": 1250,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 8490,
+          "api": 8499,
+          "iguais": 8490,
+          "soNoSite": 0,
+          "soNaApi": 9,
+          "exSite": [],
+          "exApi": [
+            "2024-08-27|S520330000004|SAÍDA DO TRATAMENTO|Zinco|0.0257|5|mg/L",
+            "2024-08-27|S520330000004|SISTEMA DE DISTRIBUIÇÃO|Trihalometanos Total|0.00163|0.1|mg/L",
+            "2024-08-27|S520330000003|PONTO DE CAPTAÇÃO|Antimônio|0.0014|0.006|mg/L"
+          ]
+        },
+        {
+          "conjunto": "captação",
+          "site": 357,
+          "api": 357,
+          "iguais": 357,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 9622,
+          "api": 9622,
+          "iguais": 9622,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "ok, faltam registros no site"
+    },
+    {
+      "ibge": "520430",
+      "nome": "Caçu",
+      "publicadoEm": "2026-11-22T14:19:45.820Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 425,
+          "api": 425,
+          "iguais": 425,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 1874,
+          "api": 1874,
+          "iguais": 1874,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 21,
+          "api": 21,
+          "iguais": 21,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 3209,
+          "api": 3209,
+          "iguais": 3209,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    },
+    {
+      "ibge": "521170",
+      "nome": "Jandaia",
+      "publicadoEm": "2026-11-22T14:29:58.503Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 390,
+          "api": 390,
+          "iguais": 390,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 1172,
+          "api": 1172,
+          "iguais": 1172,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 14,
+          "api": 14,
+          "iguais": 14,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 2871,
+          "api": 2871,
+          "iguais": 2871,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    },
+    {
+      "ibge": "521945",
+      "nome": "Santa Rita do Novo Destino",
+      "publicadoEm": "2026-11-22T14:41:05.434Z",
+      "falhasNaPublicacao": 0,
+      "ilegiveisNaApi": [],
+      "verificacoes": [
+        {
+          "conjunto": "vigilância",
+          "site": 812,
+          "api": 812,
+          "iguais": 812,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle semestral",
+          "site": 8,
+          "api": 8,
+          "iguais": 8,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "captação",
+          "site": 84,
+          "api": 84,
+          "iguais": 84,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        },
+        {
+          "conjunto": "controle mensal (somas)",
+          "site": 1257,
+          "api": 1257,
+          "iguais": 1257,
+          "soNoSite": 0,
+          "soNaApi": 0,
+          "exSite": [],
+          "exApi": []
+        }
+      ],
+      "registrosDeOutroMunicipio": 0,
+      "resultado": "idêntico"
+    }
+  ]
+}
