@@ -1045,7 +1045,7 @@ function desenhaGeral(f) {
   const piorP = porParam.filter((p) => p.partes.fora).sort((a, b) => b.partes.fora / (b.partes.dentro + b.partes.fora) - a.partes.fora / (a.partes.dentro + a.partes.fora))[0];
   if (!R.n) ins.push(["info", `Não há análises da vigilância em ${periodoTexto(f)}${f.sistema ? " para este sistema" : ""}.`]);
   else {
-    ins.push(["check_circle", [el("b", {}, fmtPct(R.conf)), ` das ${fmt(R.comRef)} análises com referência ficaram dentro da referência em ${periodoTexto(f)}.`]]);
+    ins.push(["check_circle", [el("b", {}, fmtPct(R.conf)), ` das ${fmt(R.comRef)} análises com valor de referência ficaram dentro dele em ${periodoTexto(f)}.`]]);
     if (piorP) ins.push(["error", ["O parâmetro com mais falhas proporcionais é ", el("b", {}, piorP.nome), `: ${fmtPct(piorP.partes.fora / (piorP.partes.dentro + piorP.partes.fora) * 100)} das análises fora da referência.`]]);
     if (R.ecoli) ins.push(["error", [el("b", {}, `${fmt(R.ecoli)} ${R.ecoli === 1 ? "análise" : "análises"} com E. coli`), " — indica contaminação fecal e pede investigação imediata."]]);
     else if (R.ecoliN) ins.push(["check_circle", [`Nenhuma presença de E. coli em ${fmt(R.ecoliN)} análises.`]]);
