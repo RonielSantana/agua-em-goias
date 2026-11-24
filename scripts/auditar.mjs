@@ -6,6 +6,13 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { chaveDaSenha, decifra } from "./cofre.mjs";
+// Site protegido: os dados publicados estão cifrados; a auditoria precisa de SENHA_SITE para abri-los.
+const CHAVE = process.env.SENHA_SITE ? chaveDaSenha(process.env.SENHA_SITE) : null;
+async function publicado(nome) {
+  if (CHAVE) { const r = await fetch(`${SITE}dados/${nome}.bin`, { signal: AbortSignal.timeout(120000) }); if (r.ok) return decifra(CHAVE, Buffer.from(await r.arrayBuffer())); }
+  return json(`${SITE}dados/${nome}.json`);
+}
 
 const SITE = process.env.SITE || "https://ronielsantana.github.io/agua-em-goias/";
 const API = "https://apidadosabertos.saude.gov.br/sisagua";
@@ -54,7 +61,7 @@ function compara(nome, chavesSite, chavesApi) {
   return { conjunto: nome, site: chavesSite.length, api: chavesApi.length, iguais, soNoSite, soNaApi, exSite, exApi };
 }
 
-const indice = await json(SITE + "dados/indice.json");
+const indice = await publicado("indice");
 let alvo = process.argv.slice(2).filter((a) => /^\d{6}$/.test(a));
 if (!alvo.length) {
   const fixos = ["520870", "520110", "520140", "521880", "521250", "520030", "521523"]; // Goiânia, Anápolis, Aparecida, Rio Verde, Luziânia, Alexânia, Novo Gama
@@ -68,7 +75,7 @@ console.log(`Auditando ${alvo.length} municípios contra a API (site atualizado 
 const relatorio = [];
 for (const ibge of alvo) {
   const nome = indice.municipios.find((m) => m.i === ibge)?.n || ibge;
-  const pub = await json(`${SITE}dados/${ibge}.json`);
+  const pub = await publicado(ibge);
   const ilegiveis = [];
   const [vig, ctl, cap, sem] = await Promise.all(["vigilancia-parametros-basicos", "controle-mensal-parametros-basicos", "pontos-de-captacao", "controle-semestral"].map((c) => bruto(c, ibge, ilegiveis)));
   const r = { ibge, nome, publicadoEm: pub.baixadoEm, falhasNaPublicacao: pub.falhas || 0, ilegiveisNaApi: ilegiveis, verificacoes: [] };

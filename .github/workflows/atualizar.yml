@@ -64,6 +64,13 @@ jobs:
           PRAZO_MUNICIPIO: "12"
           TEMPO_TOTAL: "280"
           SITE_ANTERIOR: https://ronielsantana.github.io/agua-em-goias/
+          SENHA_SITE: ${{ secrets.SENHA_SITE }}
+
+      # Cifra os dados com a senha (segredo SENHA_SITE). Sem o segredo, para aqui e não publica nada aberto.
+      - name: Cifrar os dados com a senha do site
+        run: node scripts/criptografar.mjs
+        env:
+          SENHA_SITE: ${{ secrets.SENHA_SITE }}
 
       - uses: actions/configure-pages@v5
 

@@ -10,6 +10,9 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { CONJUNTOS, Prazo, baixarTudo, registro, resumir } from "./sisagua.mjs";
+import { chaveDaSenha, decifra } from "./cofre.mjs";
+// Com SENHA_SITE, o site anterior está cifrado: usa a chave para ler o índice anterior.
+const CHAVE = process.env.SENHA_SITE ? chaveDaSenha(process.env.SENHA_SITE) : null;
 
 const raiz = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const saida = path.join(raiz, "site", "dados");
@@ -35,7 +38,11 @@ const pop = await lerCadastro("populacao-go.json"), trat = await lerCadastro("tr
 let indiceAnt = {};
 try { for (const m of JSON.parse(await readFile(path.join(saida, "indice.json"), "utf8")).municipios) indiceAnt[m.i] = m; } catch {}
 if (!Object.keys(indiceAnt).length && SITE_ANTERIOR.startsWith("http")) {
-  try { const ri = await fetch(SITE_ANTERIOR + "dados/indice.json", { signal: AbortSignal.timeout(30000) }); if (ri.ok) for (const m of (await ri.json()).municipios) indiceAnt[m.i] = m; } catch {}
+  try {
+    const ri = await fetch(SITE_ANTERIOR + "dados/indice.bin", { signal: AbortSignal.timeout(30000) });
+    if (ri.ok && CHAVE) for (const m of decifra(CHAVE, Buffer.from(await ri.arrayBuffer())).municipios) indiceAnt[m.i] = m;
+    else { const rj = await fetch(SITE_ANTERIOR + "dados/indice.json", { signal: AbortSignal.timeout(30000) }); if (rj.ok) for (const m of (await rj.json()).municipios) indiceAnt[m.i] = m; }
+  } catch {}
 }
 
 const resumo = {}, reaproveitados = [], semDados = [];
@@ -43,11 +50,13 @@ let feitos = 0;
 
 // Se um município não puder ser atualizado, tenta manter os dados publicados da semana anterior.
 async function reaproveita(m, motivo) {
-  if (existsSync(path.join(saida, m.i + ".json"))) { reaproveitados.push(m.n); console.log(`  ${m.n}: mantidos os dados anteriores (${motivo})`); return; }
+  if (existsSync(path.join(saida, m.i + ".json")) || existsSync(path.join(saida, m.i + ".bin"))) { reaproveitados.push(m.n); console.log(`  ${m.n}: mantidos os dados anteriores (${motivo})`); return; }
   if (SITE_ANTERIOR.startsWith("http")) {
     try {
-      const ra = await fetch(`${SITE_ANTERIOR}dados/${m.i}.json`, { signal: AbortSignal.timeout(60000) });
-      if (ra.ok) { await writeFile(path.join(saida, m.i + ".json"), Buffer.from(await ra.arrayBuffer())); reaproveitados.push(m.n); console.log(`  ${m.n}: mantidos os dados da semana anterior (${motivo})`); return; }
+      // site anterior cifrado (.bin, copiado como está) ou aberto (.json)
+      let ra = await fetch(`${SITE_ANTERIOR}dados/${m.i}.bin`, { signal: AbortSignal.timeout(60000) }), ext = ".bin";
+      if (!ra.ok) { ra = await fetch(`${SITE_ANTERIOR}dados/${m.i}.json`, { signal: AbortSignal.timeout(60000) }); ext = ".json"; }
+      if (ra.ok) { await writeFile(path.join(saida, m.i + ext), Buffer.from(await ra.arrayBuffer())); reaproveitados.push(m.n); console.log(`  ${m.n}: mantidos os dados da semana anterior (${motivo})`); return; }
     } catch {}
   }
   semDados.push(m.n);
@@ -79,7 +88,7 @@ clearInterval(batida);
 
 const indice = {
   atualizado: new Date().toISOString(), estado: "GO",
-  municipios: municipios.filter((m) => existsSync(path.join(saida, m.i + ".json"))).map((m) => ({ ...(indiceAnt[m.i] || {}), ...(resumo[m.i] || {}), i: m.i, n: m.n, u: m.u })),
+  municipios: municipios.filter((m) => existsSync(path.join(saida, m.i + ".json")) || existsSync(path.join(saida, m.i + ".bin"))).map((m) => ({ ...(indiceAnt[m.i] || {}), ...(resumo[m.i] || {}), i: m.i, n: m.n, u: m.u })),
 };
 await writeFile(path.join(saida, "indice.json"), JSON.stringify(indice));
 console.log(`Pronto em ${min()}: ${Object.keys(resumo).length} atualizados, ${reaproveitados.length} com dados anteriores, ${semDados.length} sem dados; ${indice.municipios.length} municípios no site.`);

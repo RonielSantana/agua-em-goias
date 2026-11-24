@@ -42,3 +42,19 @@ node scripts/servir.mjs                     # abre em http://localhost:5190
 - O VMP do controle semestral vale para a água tratada; na captação (água bruta) serve só de comparação.
 - Valores muito acima do VMP podem ser erro de unidade no envio ao SISAGUA; confira com o laudo.
 - O GitHub suspende agendamentos de repositórios sem atividade por 60 dias; a atualização mensal do cadastro gera um commit e evita isso.
+
+## Acesso por senha
+
+O site pede uma senha. Os dados publicados (`dados/*.bin`) são cifrados com AES-256-GCM usando uma chave
+derivada da senha (PBKDF2-SHA256, 310 mil iterações); sem a senha, os arquivos são ilegíveis mesmo se
+baixados direto. A senha fica só no segredo `SENHA_SITE` do repositório (Settings → Secrets and variables →
+Actions) e nunca é gravada em arquivo. Para trocar a senha, atualize o segredo e rode o workflow de novo:
+
+```bash
+gh secret set SENHA_SITE -R RonielSantana/agua-em-goias
+gh workflow run atualizar.yml -R RonielSantana/agua-em-goias
+```
+
+Observações: o código e o cadastro de Goiás (`cadastro/*.json`) continuam públicos neste repositório; são
+dados abertos do Ministério da Saúde. "Lembrar neste computador" guarda apenas a chave derivada no navegador;
+o botão de sair a apaga.

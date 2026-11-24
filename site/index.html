@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400..500,0..1,0&icon_names=analytics,arrow_downward,arrow_upward,bar_chart,check_circle,close,dark_mode,database,download,error,factory,filter_alt_off,history,info,light_mode,location_on,refresh,science,search,table_chart,water_drop&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400..500,0..1,0&icon_names=analytics,arrow_downward,arrow_upward,bar_chart,check_circle,close,dark_mode,database,download,error,factory,filter_alt_off,history,info,light_mode,location_on,lock,logout,refresh,science,search,table_chart,water_drop&display=block">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script>window.SISAGUA_SITE = { base: "dados/", estado: "Goiás" };</script>
+<script>window.SISAGUA_SITE = { base: "dados/", estado: "Goiás", protegido: true };</script>
 <style>
 /* Layout: barra superior com busca, abas, faixa de filtros em chips e grade de cartões (Material 3, estilo Google). */
 :root {
@@ -187,6 +187,20 @@ tbody tr:last-child td { border-bottom: 0; }
 details.notas { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 14px 20px; }
 details.notas summary { cursor: pointer; font: 500 14px var(--font); display: flex; align-items: center; gap: 8px; }
 details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px; color: var(--on-2); }
+/* tela de senha */
+body.bloqueado .busca, body.bloqueado .abas, body.bloqueado #b-atualizar, body.bloqueado #inicio, body.bloqueado #conteudo, body.bloqueado #carregando { display: none !important; }
+.acesso { display: grid; place-items: center; padding: 48px 0; }
+.acesso-cartao { width: min(100%, 400px); background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-2); padding: 32px 28px 28px; display: grid; gap: 14px; }
+.acesso-icone { width: 56px; height: 56px; border-radius: 50%; background: var(--primary-c); color: var(--on-primary-c); display: grid; place-items: center; }
+.acesso-icone .ms { font-size: 28px; font-variation-settings: "FILL" 1; }
+.acesso-cartao h2 { margin: 4px 0 0; font: 400 24px var(--font); }
+.acesso-cartao p { margin: 0; color: var(--on-2); }
+.acesso-campo { display: grid; gap: 6px; font: 500 13px var(--font-text); color: var(--on-2); }
+.acesso-campo input { height: 48px; border: 1px solid var(--outline); border-radius: 8px; padding: 0 14px; background: var(--surface); color: var(--on); font: 400 16px var(--font-text); }
+.acesso-campo input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.acesso-erro { color: var(--bad) !important; font-weight: 500; }
+.acesso-botao { justify-content: center; height: 44px; background: var(--primary); color: var(--on-primary); }
+.acesso-botao:disabled { opacity: .6; }
 .esmaecido { opacity: .5; pointer-events: none; transition: opacity .2s; }
 @media (max-width: 640px) {
   .marca small, .marca b { display: none; }
@@ -217,6 +231,7 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
     <div class="acoes">
       <button class="icone-btn" id="b-atualizar" hidden title="Baixar de novo os dados deste município" disabled><span class="ms">refresh</span></button>
       <button class="icone-btn" id="b-tema" title="Alternar tema claro/escuro"><span class="ms">dark_mode</span></button>
+      <button class="icone-btn" id="b-sair" title="Sair (pede a senha de novo)" hidden><span class="ms">logout</span></button>
     </div>
   </div>
   <nav class="abas" role="tablist" aria-label="Seções">
@@ -230,6 +245,18 @@ details.notas ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px
 
 <main id="main">
   <!-- estado inicial -->
+  <section class="acesso" id="acesso" hidden>
+    <form class="acesso-cartao" id="acesso-form" autocomplete="off">
+      <div class="acesso-icone"><span class="ms">lock</span></div>
+      <h2>Acesso restrito</h2>
+      <p>Digite a senha para ver o painel. Os dados deste site são cifrados e só abrem com a senha correta.</p>
+      <label class="acesso-campo"><span>Senha</span><input id="acesso-senha" type="password" inputmode="text" autocomplete="current-password" required></label>
+      <label class="alternar"><input id="acesso-lembrar" type="checkbox"> Lembrar neste computador</label>
+      <p class="acesso-erro" id="acesso-erro" hidden>Senha incorreta. Confira e tente de novo.</p>
+      <button class="btn-tonal acesso-botao" id="acesso-entrar" type="submit">Entrar</button>
+    </form>
+  </section>
+
   <section class="vazio-pag" id="inicio">
     <span class="ms">water_drop</span>
     <h2>Escolha um município</h2>
@@ -419,6 +446,7 @@ function aplicaTema(t) {
   guarda.por("tema", t);
   if (estado.base) desenha();
 }
+$("b-sair").addEventListener("click", () => { Cofre.esquece(); location.hash = ""; location.reload(); });
 $("b-tema").addEventListener("click", () => aplicaTema(document.documentElement.dataset.tema === "escuro" ? "claro" : "escuro"));
 
 // ======================================================================
@@ -456,13 +484,74 @@ function desempacota(o) {
   }
   return o;
 }
+// ---------- Acesso por senha (site com dados cifrados; ver scripts/cofre.mjs do repositório) ----------
+// Os arquivos .bin só se abrem com a chave derivada da senha (PBKDF2-SHA256 → AES-256-GCM).
+// A senha não fica guardada; com "lembrar", guarda-se só a chave derivada neste navegador.
+const b64d = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const b64e = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const Cofre = {
+  chave: null, params: null,
+  async parametros() { return this.params ??= await (await fetch(SITE.base + "chave.json", { cache: "no-cache" })).json(); },
+  async abre(bytes) {
+    const claro = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(0, 12) }, this.chave, bytes.slice(12));
+    return JSON.parse(await new Response(new Blob([claro]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+  },
+  async confere() { try { return (await this.abre(b64d((await this.parametros()).verificador))) === "SISAGUA-OK"; } catch { return false; } },
+  async guardada() {
+    let b = null;
+    try { b = sessionStorage.getItem("sisagua-chave") || localStorage.getItem("sisagua-chave"); } catch {}
+    if (!b) return false;
+    this.chave = await crypto.subtle.importKey("raw", b64d(b), "AES-GCM", false, ["decrypt"]);
+    if (await this.confere()) return true;
+    this.esquece(); return false;
+  },
+  async entra(senha, lembrar) {
+    const p = await this.parametros();
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveKey"]);
+    this.chave = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64d(p.sal), iterations: p.iteracoes, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, true, ["decrypt"]);
+    if (!(await this.confere())) { this.chave = null; return false; }
+    const raw = b64e(await crypto.subtle.exportKey("raw", this.chave));
+    try { (lembrar ? localStorage : sessionStorage).setItem("sisagua-chave", raw); } catch {}
+    return true;
+  },
+  esquece() { this.chave = null; try { sessionStorage.removeItem("sisagua-chave"); localStorage.removeItem("sisagua-chave"); } catch {} },
+  async busca(nome) {
+    const r = await fetch(`${SITE.base}${nome}.bin`, { cache: "no-cache" });
+    if (!r.ok) throw new Error(r.status === 404 ? "este município ainda não tem dados publicados" : "HTTP " + r.status);
+    return this.abre(new Uint8Array(await r.arrayBuffer()));
+  },
+};
+// Mostra a tela de senha e só continua quando a senha confere.
+function pedeSenha() {
+  document.body.classList.add("bloqueado");
+  $("acesso").hidden = false;
+  setTimeout(() => $("acesso-senha").focus(), 50);
+  return new Promise((pronto) => {
+    $("acesso-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const botao = $("acesso-entrar");
+      botao.disabled = true; $("acesso-erro").hidden = true; botao.textContent = "Conferindo…";
+      let ok = false;
+      try { ok = await Cofre.entra($("acesso-senha").value, $("acesso-lembrar").checked); } catch {}
+      botao.disabled = false; botao.textContent = "Entrar";
+      if (!ok) { $("acesso-erro").hidden = false; $("acesso-senha").select(); return; }
+      $("acesso-senha").value = "";
+      $("acesso").hidden = true; document.body.classList.remove("bloqueado");
+      pronto();
+    };
+  });
+}
 async function listaMunicipios() {
   if (!SITE) return (await fetch("/api/municipios")).json();
-  INDICE = await (await fetch(SITE.base + "indice.json", { cache: "no-cache" })).json();
+  INDICE = SITE.protegido ? await Cofre.busca("indice") : await (await fetch(SITE.base + "indice.json", { cache: "no-cache" })).json();
   return INDICE.municipios;
 }
 (async () => {
   try {
+    if (SITE?.protegido) {
+      $("b-sair").hidden = false;
+      if (!(await Cofre.guardada())) await pedeSenha();
+    }
     const l = await listaMunicipios();
     MUNICIPIOS = l.map((m) => ({ ...m, chave: semAcento(m.n) }));
     if (SITE) {
@@ -559,9 +648,12 @@ async function abreMunicipio(m, filtrosIniciais = null, atualizar = false) {
   try {
     let url = `/api/municipio/${m.i}${atualizar ? "?atualizar=1" : ""}`, d;
     if (SITE) { // modo site: um arquivo por município, com o cadastro dentro
-      const r = await fetch(`${SITE.base}${m.i}.json`, { cache: "no-cache" });
-      if (!r.ok) throw new Error(r.status === 404 ? "este município ainda não tem dados publicados" : "HTTP " + r.status);
-      d = desempacota(await r.json());
+      if (SITE.protegido) d = desempacota(await Cofre.busca(m.i));
+      else {
+        const r = await fetch(`${SITE.base}${m.i}.json`, { cache: "no-cache" });
+        if (!r.ok) throw new Error(r.status === 404 ? "este município ainda não tem dados publicados" : "HTTP " + r.status);
+        d = desempacota(await r.json());
+      }
       if (pedido !== estado.pedido) return;
       preparaBase(d, d.cad, filtrosIniciais || {});
       $("carregando").hidden = true; $("conteudo").hidden = false; desenha();
